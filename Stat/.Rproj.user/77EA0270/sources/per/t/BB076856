@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1519589323008.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3066060294",
+    "id" : "BB076856",
+    "lastKnownWriteTime" : 1520106871,
+    "last_content_update" : 1520106871906,
+    "path" : "~/Desktop/Stat/auswertung_csv.R",
+    "project_path" : "auswertung_csv.R",
+    "properties" : {
+        "cursorPosition" : "15,0",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

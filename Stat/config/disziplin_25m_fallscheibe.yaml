@@ -1,0 +1,8 @@
+report.File: report/fallscheibe.Rmd
+report.OutputDir: output
+report.description: BDS 25m Fallscheibe
+report.Target: fallscheibeGK
+report.DistanceUnit: m
+report.Distance: 25
+report.Robust: TRUE
+report.TargetPlotUnit: cm

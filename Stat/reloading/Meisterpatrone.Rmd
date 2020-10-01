@@ -1,0 +1,415 @@
+---
+title: "Perfekte KW-Patrone"
+output: 
+  html_document: 
+    highlight: textmate
+    theme: spacelab
+    toc: no
+  html_notebook:
+    highlight: textmate
+    theme: cosmo
+    toc: no
+---
+
+
+
+
+
+#Zielsetzung
+
+Im Rahmen der Zielsetzung "Deutscher Meister"-Werden beschreibt soll dieses Dokument den Erkenntnisprozess zur Findung der perfekten Match-Patrone beschreiben.
+
+  1. Perfekte Match-Munition entwickeln. Eine perfekte Matchpatrone soll aus der PPQ einen Streukreis <= 6cm und aus der HPS einen Streukreis <= 2.5cm erreichen. Weitere Ziele für die perfekte Patrone sind geringe Herstellungskosten und ein möglichst geringes Hochschlagen der Waffe bei sicherem Erreichen des Mindestimpulses. Denkbar ist, dass die Zielstellung nicht mit einem Patronentyp erreicht wird, sondern das für unterschiedliche Disziplinen verschiedene Munitionssorten benutzt werden müssen.
+  2. Fehler bzw. Fehlerbereiche finden
+  3. Untersuchung der Arbeitsmethodik um Fehlerquellen auszuschließen
+  4. Statistische Rechnungen und Methoden erlernen und verstehen
+  
+  
+#Methodik
+
+  1. Beobachtung des Prozesses
+  2. Entwicklung von Messmethodiken
+  3. 
+
+
+#Annahmen
+
+Die Genauigkeit wird von drei Faktoren beeinflusst
+  1. Genauigkeit des Schützen
+  2. Genauigkeit des Waffe
+  3. Streuung der Munition.
+  
+Dieses Dokument untersucht primär den dritten Punkt, die Streuung der Munition. Angenommen wird dass die Munitionsstreuung im wesentlich durch das Geschoss selbst, die möglichst gleichbleibende Lage des Geschosses im Patronenlager, möglichst gleichbleibender Druckaufbau und -spitze und wiederholbar gleichmäßigem Pulverabbrand bestimmt wird.
+
+Weitere Kriterien für eine perfekte Matchmunition sind Herstellungskosten und Reinigungsaufwand der Waffe.
+
+Die Streuung der Munition wird im weiteren Sinne durch die Anpassung der Munition auf die Waffe bestimmt. 
+
+#Methodik
+## Caliber
+
+Die Zeitschrift Caliber hat in der Ausgabe 2007/02 einen Artikel "Load to Win" veröffentlich, in dem ein Methodik bzw. Regeln für Präzisionspatronen im Kurzwaffenbereich vorgestellt werden. Die Aussagen des Artikels sind:
+
+  1. Das wichtigste sind die Geschosse. Hohlspitzgeschosse, insbesondere von Hornady, seien dabei besonders präzise. Mantelgeschosse verzeihen leichte Fehler beim Laden bzw. in der Waffe. Gut seien aber auch High Speed-Geschosse von H&N und die TMJ-Geschosse von Speer.
+  2. Für möglichst rückstoßarme Patronen sollen leichte Geschosse bevorzugt werden. Was im direktem Widerspruch zu Aussagen aus der IPSC-Szene steht, die regelmäßig schwere Geschosse bevorzugen.
+  3. Bei diagonalen Schussbildern bzw. Bleiablagerungen in der Waffe Geschosse mit etwas größerem Durchmesser benutzen.
+  4. Das schnellstmögliche Pulver wählen. Der Druck muss über 1500 bar liegen, da ansonsten das Pulver ungleichmäßig verbrennt. 
+  		- Hodgedon Titegroup, 
+		- Vihtavouri N320, 
+		- Rottweil P801, 
+		- Accurate No 2, 
+		- Alliant Bullseye
+		- Diese Pulver brauchen allerdings eine technisch einwandfreie Waffe. Schnelle Pulver brauchen einen festen Griff an der Waffe.
+  5. Bei Waffen mit viel Spiel etwas langsamere Pulver verwenden, etwa Alliant Power Pistol, 3N57, Hodgdon Longshot. Langsamere Pulver haben als Nachteil einen größeren Gasdruck an der Mündung, länger wirkenden Rückstoß, höhere Geschwindigkeitsschwankungen. 
+  6. Bei starken Geschwindigkeitsschwanken kann man mal Magnumzünder testen.
+  7. Die besten Hülsen sind Hülsen aus elastischem Messing, da diese gut lidern und das Geschossen halten können. Hersteller wären Remington, Winchester, Federal.
+  8. Vollkalibrieren.
+  9. Das Geschoss muss so fest sitzen, dass es sich nicht mehr reindrücken lässt, aber nicht mehr.
+  10. Hülsen so wenig wie möglich aufweiten.
+  11. So wenig wie möglich crimpen
+  12. OAL so lang wie möglich, ohne das das Geschoss an den Übergang stößt.
+  13. Zündhütchen 0.1mm unter dem Patronenboden
+  14. Hohe Geschwindigkeitsschwankungen führen nicht zwangsweise zu einer schlechten Präzision.
+  15. Ursache hoher Geschwindigkeitsschwankungen können dünnwandige Hülsen sein, die nicht mehr flexibel genug sind. Kandidaten dafür sind vor allem Hülsen von Billigpatronen.
+  16. Wenn alles nicht hilft, dann bleiben als Notmaßnahmen der Wechsel auf ausgesprochene Matchgeschosse (Hornady HAP oder XTP), die Geschossgeschwindigkeit um 15m/s erhöhen, eine langsamere Pulversorte wählen, die Hülsenmarke wechseln.
+  17. Eine sehr gute Präzision erreicht man meist nur in einem sehr engem Geschwindigkeitsbereich.
+  18. Rotpunkt-Visier ist sehr hilfreich um die Schützenstreuung zu reduzieren. Noch besser ist natürlich eine Ransom Rest
+
+
+#Mess- und Dosiergeräte M
+## Messschieber MS
+### Beschreibung
+  - MarCal 16 ER von Mahr mit einer Ablesegenauigkeit von 0.01mm und einer garantierten Messgenauigkeit von 0.02mm. Preis ca. 100,- EUR
+
+
+
+### Hinweise zur Messung
+  - Messschieber verkanten schnell. Als Folge wird ein zu großes Maß angezeigt.
+  - Durch zu großem Druck kann die Probe gedrückt werden, Folge wäre ein zu geringes Maß.
+  - Die Messschenkel können bei zu großem Druck verbiegen, Folge wäre wieder ein zu geringes, angezeigtes Maß.
+
+
+### Prüfung der Messgenauigkeit
+
+```{r echo=FALSE}
+```
+
+
+Zur Prüfung wurde ein Geschoss `r ms_zahlen$n` mal gemessen. Aus den Messergebnissen lassen sich ableiten:
+
+  - Mittelwert = `r round(ms_zahlen$mean,2)` bei `r ms_zahlen$n` Proben und einer Standardabweichung `r round(ms_zahlen$sd,3)`
+  - Min/Max/Spannweite = `r ms_zahlen$min`/`r ms_zahlen$max`/`r ms_zahlen$spread` 
+  - Median = `r ms_zahlen$median`
+  - Modalwert (häufigster Messwert) = `r ms_zahlen$modal`
+  - Fehlerzahl (Abweichung > `r ms_zahlen$sd_max`fache SD) = `r ms_zahlen$failure`/100    
+  
+  
+  
+  Die Messwerte im Einzelnen:
+  
+```{r echo=FALSE}
+
+plotMesswerte(ms_values, ms_zahlen, 'mm')
+```
+
+
+## Bügelmessschraube MB
+  - WABECO Mikrometerschraube 0-25 mm mit einer Ablesegenauigkeit von 0.01mm. Preis ca. 15,- EUR
+  
+##Waage MW
+### Beschreibung
+
+  - G&G 50g/0.001g FC50 Feinwaage mit Kalibriergewicht. Preis ca. 60,- EUR.
+
+### Hinweise zur Messung
+
+- Die Dämpfung ist recht stark. Um mit der Tara-Taste Differenzmessungen zu machen, muss das Wägegut eine ausreichend große Differenz haben, da ansonsten die Differenz nicht angezeigt wird.
+- Die Dämpfung reagiert auch unempfindlich wenn das Wägegut zu schnell in die Wägeschale gegeben wird. In der Folge wird ein etwas zu niedriges Gewicht angezeigt. 
+
+
+### Prüfung der Messgenauigkeit
+
+```{r echo=FALSE}
+
+
+
+```
+
+  
+
+Zur Prüfung wurde Zündhütchen `r mw_zahlen$n`  mal gemessen. Aus den Messergebnissen lassen sich ableiten:
+
+  - Mittelwert = `r round(mw_zahlen$mean,2)` bei `r mw_zahlen$n` Proben und einer Standardabweichung `r round(mw_zahlen$sd,3)`
+  - Min/Max/Spannweite = `r mw_zahlen$min`/`r mw_zahlen$max`/`r mw_zahlen$spread` 
+  - Median = `r mw_zahlen$median`
+  - Modalwert (häufigster Messwert) = `r mw_zahlen$modal`
+  - Fehlerzahl (Abweichung > `r mw_zahlen$sd_max`fache SD) = `r mw_zahlen$failure`/100    
+  
+  
+  
+  
+  Die Messwerte im Einzelnen:
+  
+```{r echo=FALSE}
+plotMesswerte(mw_values, mw_zahlen, 'Grain')
+```
+
+### Fazit
+
+
+
+
+##Pulverschieber MP
+### Beschreibung
+  - Dillon 650 XL mit Pulverschieber/Pulverfüller
+  
+  
+### Hinweise zur Messung
+
+- Die Messergebnisse wurden durch fehlerhaftes Wiegen beeinflusst. In der Mitte der Messreihe wurde das Pulver zu schnell in die Waage eingebracht.
+- Die Ursache der fehlerhaften Füllungen ist unklar.
+
+
+### Prüfung der Messgenauigkeit
+
+Zur Prüfung Hülsen `r mp_zahlen$n` mit 3.5gr Pulver RS 12 befüllt und anschließend das Pulver mit der Waage MW gewogen. Aus den Messergebnissen lassen sich ableiten:
+
+  - Mittelwert = `r round(mp_zahlen$mean,2)` bei `r mp_zahlen$n` Proben und einer Standardabweichung `r round(mp_zahlen$sd,3)`
+  - Min/Max/Spannweite = `r mp_zahlen$min`/`r mp_zahlen$max`/`r mp_zahlen$spread` 
+  - Median = `r mp_zahlen$median`
+  - Modalwert (häufigster Messwert) = `r mp_zahlen$modal`
+  - Fehlerzahl (Abweichung > `r mp_zahlen$sd_max`fache SD) = `r mp_zahlen$failure`/100    
+
+
+  Die Messwerte im Einzelnen:
+  
+  
+```{r echo=FALSE}
+plotMesswerte(mp_values, mp_zahlen, 'gr')
+```
+
+### Auswirkungen
+
+
+
+  - Ausgehend von einer Zielpatrone mit einer OAL von 28.8mm und 3.5gr Pulver und einer V0 von `r gibPulverDaten(PulverDaten, 28.8, 3.5)['v0']` m/s stellt sich die Geschwindigkeit der gemessenen `r PulverMengeTest$n` Patronen so dar:
+    - Mittelwert = `r round(PulverMengeTest$mean,2)` bei `r PulverMengeTest$n` Proben und einer Standardabweichung `r round(PulverMengeTest$sd,3)`
+    - Min/Max/Spannweite = `r PulverMengeTest$min`/`r PulverMengeTest$max`/`r PulverMengeTest$spread` 
+    - Median = `r PulverMengeTest$median`
+    - Modalwert (häufigster Messwert) = `r PulverMengeTest$modal`
+    - Fehlerzahl (Abweichung > `r PulverMengeTest$sd_max`fache SD) = `r PulverMengeTest$failure`/100    
+
+#Komponenten K
+
+## Patronenlager PL
+
+### Patronenlager PL mit LOS 145gr HP 
+  - PPQ: Eine Länge von 29.35 passt sicher nicht mehr. Eine Länge von 29.15 passt noch. 
+  - HPS: Eine Länge von 28.2 passt. Eine Länge von 28.4 passt scheinbar nicht mehr.
+  
+Die Messung des Patronenlagers war recht ungenau, die Prüfpatronen hatten nicht die richtigen Maße. Die Lager müssen daher mit neuen Patronen noch mal geprüft werden. 
+
+Nach Abzug von 0.1mm erwünschter Freiflug und weiteren 0.2mm Toleranz für unterschiedliche Patronen ergibt sich damit vorläufig eine Länge von 
+  - PPQ: 29.00mm
+  - HPS: 28.00mm
+
+
+
+## Zündhütchen KZ
+
+## Geschosse KG
+
+
+### LOS 145gr HP KG_L145HP
+### Gewicht
+
+
+Es wurden `r KG_L145HP_D$n` Geschosse aus einem Los gezogen und anschließend vermessen
+
+
+  - Mittelwert = `r round(KG_L145HP_G$mean,2)` bei `r KG_L145HP_G$n` Proben und einer Standardabweichung `r round(KG_L145HP_G$sd,3)`
+  - Min/Max/Spannweite = `r KG_L145HP_G$min`/`r KG_L145HP_G$max`/`r KG_L145HP_G$spread` 
+  - Median = `r KG_L145HP_G$median`
+  - Modalwert (häufigster Messwert) = `r KG_L145HP_G$modal`
+  - Fehlerzahl (Abweichung > `r KG_L145HP_G$sd_max`fache SD) = `r KG_L145HP_G$failure`/100    
+  
+
+  Die Messwerte im Einzelnen:
+  
+```{r echo=FALSE}
+plotMesswerte(GeschossDaten$Gewicht, KG_L145HP_G, 'gr')
+
+```
+
+### Länge
+
+Es wurden `r KG_L145HP_L$n` Geschosse aus einem Los gezogen und anschließend vermessen
+
+  - Mittelwert = `r round(KG_L145HP_L$mean,2)` bei `r KG_L145HP_L$n` Proben und einer Standardabweichung `r round(KG_L145HP_L$sd,3)`
+  - Min/Max/Spannweite = `r KG_L145HP_L$min`/`r KG_L145HP_L$max`/`r KG_L145HP_L$spread` 
+  - Median = `r KG_L145HP_L$median`
+  - Modalwert (häufigster Messwert) = `r KG_L145HP_L$modal`
+  - Fehlerzahl (Abweichung > `r KG_L145HP_L$sd_max`fache SD) = `r KG_L145HP_L$failure`/100    
+  
+  Die Messwerte im Einzelnen:
+  
+```{r echo=FALSE}
+
+plotMesswerte(GeschossDaten$Laenge, KG_L145HP_L, 'mm')
+
+```
+
+### Durchmesser
+
+
+Es wurden `r KG_L145HP_D$n` Geschosse aus einem Los gezogen und anschließend vermessen
+
+  - Mittelwert = `r round(KG_L145HP_D$mean,2)` bei `r KG_L145HP_D$n` Proben und einer Standardabweichung `r round(KG_L145HP_D$sd,3)`
+  - Min/Max/Spannweite = `r KG_L145HP_D$min`/`r KG_L145HP_D$max`/`r KG_L145HP_D$spread` 
+  - Median = `r KG_L145HP_D$median`
+  - Modalwert (häufigster Messwert) = `r KG_L145HP_D$modal`
+  - Fehlerzahl (Abweichung > `r KG_L145HP_D$sd_max`fache SD) = `r KG_L145HP_D$failure`/100    
+  
+  Die Messwerte im Einzelnen:
+  
+```{r echo=FALSE}
+plotMesswerte(GeschossDaten$Laenge, KG_L145HP_D, 'mm')
+
+```
+
+###Korrelation
+
+`r kable(rcorr(as.matrix(GeschossDaten[3:5]), type = "pearson")$r)`
+
+
+## Hülsen KH
+
+
+#Patronen P
+##OAL Länge PL
+###Messwerte
+
+```{r echo=FALSE}
+#Rohdaten
+
+
+```
+
+
+####Messung 1
+Es wurden `r pl_zahlen$n` Patronen hergestellt und anschließend die Länge gemessen.
+
+  - Mittelwert = `r round(pl_zahlen$mean,2)` bei `r pl_zahlen$n` Proben und einer Standardabweichung `r round(pl_zahlen$sd,3)`
+  - Min/Max/Spannweite = `r pl_zahlen$min`/`r pl_zahlen$max`/`r pl_zahlen$spread` 
+  - Median = `r pl_zahlen$median`
+  - Modalwert (häufigster Messwert) = `r pl_zahlen$modal`
+  - Fehlerzahl (Abweichung > `r pl_zahlen$sd_max`fache SD) = `r pl_zahlen$failure`/100    
+
+
+
+```{r echo=FALSE}
+hist(pl_values, breaks = seq(28.5, 29.0, 0.05), col = "blue", xlab = "Länge OAL in mm", ylab = "Anzahl", ylim = c(0,70), main = "Histogram Patronenlänge 1") 
+
+
+```
+
+####Messung 2
+Es wurden `r pl_zahlen2$n` Patronen hergestellt und anschließend die Länge gemessen.
+
+  - Mittelwert = `r round(pl_zahlen2$mean,2)` bei `r pl_zahlen2$n` Proben und einer Standardabweichung `r round(pl_zahlen2$sd,3)`
+  - Min/Max/Spannweite = `r pl_zahlen2$min`/`r pl_zahlen2$max`/`r pl_zahlen2$spread` 
+  - Median = `r pl_zahlen2$median`
+  - Modalwert (häufigster Messwert) = `r pl_zahlen2$modal`
+  - Fehlerzahl (Abweichung > `r pl_zahlen2$sd_max`fache SD) = `r pl_zahlen2$failure`/100    
+
+
+```{r echo=FALSE}
+
+hist(pl_values2, breaks = seq(27.5, 28.5, 0.05), col = "blue", xlab = "Länge OAL in mm", ylab = "Anzahl", ylim = c(0,60), main = "Histogram Patronenlänge 2") 
+
+
+```
+
+
+
+### Auswirkungen
+
+```{r include=FALSE}
+pl_a_a = gibPulverDaten(PulverDaten, 28.8 + pl_zahlen$sd, 3.5)['v0']
+pl_a_b = gibPulverDaten(PulverDaten, 28.8 - pl_zahlen$sd, 3.5)['v0']
+pl_a_c = gibPulverDaten(PulverDaten, 28.8, 3.5)['v0']
+pl_a_s = ((pl_a_b - pl_a_c) + (pl_a_c - pl_a_a))/2
+ 
+```
+
+
+
+
+  - Ausgehend von einer Zielpatrone mit einer OAL von 28.8mm und 3.5gr Pulver und einer V0 von `r gibPulverDaten(PulverDaten, 28.8, 3.5)['v0']` m/s verändert sich die Geschwindigkeit in diesen Bereichen:
+    - Minimal: `r gibPulverDaten(PulverDaten, max(pl_values), 3.5)['v0']` m/s
+    - Maximal: `r gibPulverDaten(PulverDaten, min(pl_values), 3.5)['v0']` m/s
+    - Durchschnitt: `r gibPulverDaten(PulverDaten, 28.8, 3.5)['v0']` m/s
+    - Spannweite: `r gibPulverDaten(PulverDaten, min(pl_values), 3.5)['v0'] - gibPulverDaten(PulverDaten, max(pl_values), 3.5)['v0']` m/s
+    - Standardabweichung: `r pl_a_s` m/s
+  
+
+
+
+##Geschwindigkeit V_0
+
+  - Messung von 15 Schuss mit PPQ aus 4.9 Lauf am 2018-30-10
+    - Mittelwert xd = 272 +- 2 m/s
+    - Standardabweichung sd = 7 m/s bei einer Spannweite von 25m/s
+    - min/max = 259 / 285 m/s
+    - basierend auf n=15 Messungen.
+    - Fehlerzahl (Abweichung > 2fache SD) = 0/100
+
+  - Messung von 15 Schuss mit HPS aus 5.5 Lauf am 2018-30-10 
+    - Mittelwert xd = 285 +- 2 m/s
+    - Standardabweichung sd = 6 m/s bei einer Spannweite von 21m/s
+    - min/max = 273 / 294 m/s
+    - basierend auf n=15 Messungen.
+    - Fehlerzahl (Abweichung > 2fache SD) = 0/100
+
+  - Vergleichsmessung von 15 Schuss mit PPQ aus 4.9 Lauf am 2018-30-10
+    - ARES 125gr mit 3.3gr RS 12 
+    - Mittelwert xd = 325 +- 1 m/s
+    - Standardabweichung sd = 3 m/s bei einer Spannweite von 16m/s
+    - min/max = 314/330 m/s
+    - basierend auf n=15 Messungen.
+    - Fehlerzahl (Abweichung > 2fache SD) >= 7/100
+
+Die höhere Fehlerzahl bei den ARES-Geschossen erklärt sich durch die deutlich kleinere Standardabweichung und mindestens einem Ausreißer bei der Mindestgeschwindigkeit. In der Summe sind die ARES-Patronen ansonsten scheinbar qualitativ besser, oder haben zumindest eine gleichmäßigere V0, als die neuen LOS-Patronen. 
+
+
+
+#Abhängigkeiten
+ xlist<-read.table("graph.txt")
+ xlist <- graph.data.frame(xlist)
+ plot(xlist)
+
+
+
+#Laborierungen
+## LOS 145gr, 3.5gr RS 12, OAL von 28.80mm
+  - Die Patrone hat einen sehr schlechten Streukreis. Unter guten Umständen wurden lediglich knapp über 170 Ringe mit der PPQ erzielt. Die 
+
+## LOS 145gr, 3.5gr RS 12, OAL von 28.00mm
+  - Die Präzision scheint jetzt deutlich besser zu sein. Es wurden 9.6 Ringe geschossen. Die erste Gruppe war vermurkst, die beiden nächsten Gruppen hatten dann im Mittel 9.8 Ringe, was dem aktuellem SCATT-Niveau entspricht.
+  - Geschwindigkeitsmessung: Mittel 289 m/s, bei n=15 s=5 und min/max = 274, 295
+
+
+#Anhang
+##Begriffe
+
+  - Präzision: Wie gut hält eine Waffe die Scheibenmitte. Ist im wesentlichen eine Frage des Visiers
+  - Genauigkeit: Wie eng sind die Streukreise
+
+  
+#Quellen / Referenzen
+  - https://www.r-graph-gallery.com/
+  
+  
+
+
+  

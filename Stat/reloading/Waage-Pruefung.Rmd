@@ -1,0 +1,79 @@
+---
+title: "Gewichtsverteilung Pulvermessung mit Dillon XL650"
+output: html_notebook
+---
+```{r}
+library(ggplot2)
+```
+
+##Ziel:
+  - Prüfung der Zuverlässigkeit der Waage
+  - Grundstock für eine Taylor-Reihe zur Fehlerfortpflanzung
+
+
+
+##Testaufbau:
+  - Pulverwaage G&G 50g/0,001g FC50 Feinwaage. 
+  - ein Prüfgewicht.
+  - Das Prüfgewicht wird einmal täglich 10x gewogen, die Daten protokolliert.
+  - Der Rest siehe 3.4.4 Präzision von Messungen
+
+  
+
+
+##Rohdaten
+
+```{r}
+#Rohdaten
+valuesB = c(13.12,13.14,13.12,13.12,13.12,13.12,13.12,13.12,13.10,13.10,13.12,13.12,13.12,13.10,13.10,13.12,13.12,13.12,13.10,13.12,13.10,13.14,13.12,13.14,13.14,13.10,13.14)
+dataB = data.frame(value=valuesB)
+
+
+
+
+
+```
+
+
+```{r echo=FALSE}
+ylim = c(min(valuesB)*0.990, max(valuesB)*1.01)
+
+breaks = seq(min(valuesB), max(valuesB), length.out = ceiling(sqrt(length(valuesB))))
+h<-hist(valuesB, breaks=breaks, col="blue", xlab="Gewicht in gr", ylab="Anzahl", ylim=c(0,20), main="Histogram Gewicht") 
+xfit<-seq(min(valuesB),max(valuesB),length=length(valuesB)) 
+yfit<-dnorm(xfit,mean=mean(valuesB),sd=sd(valuesB)) 
+yfit <- yfit*0.02*length(valuesB) 
+lines(xfit, yfit, col="red", lwd=2)
+
+
+
+```
+
+
+```{r echo=FALSE}
+plot(valuesB, type='b', col='red', pch=16, bg = 'blue', main="Messwerte", xlab = "Messung", ylab = 'Gewicht in grain', ylim =ylim )
+points(valuesB, type='p', col='blue', pch=16)
+```
+
+Mittelwert = `r round(mean(valuesB),2)` gr mit einer Standardabweichung von `r round(sd(valuesB), 3)` gr, basierend auf `r length(valuesB)` Messungen.
+
+
+##Auffälligkeiten
+
+Einfluss auf die Präzision hat
+  - die Geschwindigkeit mit der das Wägegut in die Waage fällt
+  - Zeitpunkt wann Tara gedrückt wird.
+  
+Daher ist es wichtig immer erst zu warten bis die Waage sich ausgependelt hat und dann Tara drücken.k
+
+
+```{r echo=FALSE}
+d <- density(valuesB,adjust = 1.1) # returns the density data 
+plot(d,  main="Kerndichte Patronenl??nge")
+polygon(d, col="blue", border="black")
+```
+
+
+
+
+

@@ -1,0 +1,16 @@
+#Weapon Description
+weapon: F12 Typhoon RedDot
+caliber: 18.5
+caliberUnit: mm
+click.x: 13
+click.y: 13
+click.Unit: mm
+click.Distance: 100
+click.DistanceUnit: m
+goal.plate.time: 45
+goal.speed.time: 54
+goal.speed.first: 2.5
+goal.speed.rings: 200
+goal.precision: 200
+fallscheibe.type: GK	
+

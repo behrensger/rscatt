@@ -1,0 +1,8 @@
+report.File: report/report.Rmd
+report.OutputDir: output
+report.description: BDS Mehrdistanz
+report.Target: BDS9
+report.DistanceUnit: m
+#report.Distance: 25 #auskommentiert, keine fixe Entfernung, keine default Skalierung
+report.Robust: TRUE
+report.TargetPlotUnit: cm

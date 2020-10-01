@@ -1,0 +1,81 @@
+library('shotGroups', verbose = FALSE)
+library('yaml', verbose = FALSE)
+library('rmarkdown', verbose = FALSE)
+library('markdown', verbose = FALSE)
+
+
+setwd('/Users/abehrens/Desktop/Stat') #set directory
+setwd('C:\\Users\\Andrey.Behrens\\Desktop\\Stat\\') #set directory
+getwd()
+
+source("R/createReport.R", encoding = 'UTF-8')
+foo = createReport(	PointDataFile = 'speed_20180212.csv',
+              PointDataConfigFile = 'config/pointdata_ot2.yaml',
+              WeaponConfigFile = 'config/conf_xesse_rd.yaml',
+              ReportConfigFile = 'config/disziplin_25m_Prae.yaml',
+              #ReportConfigFile = 'config/disziplin_25m_speed.yaml',
+              #ReportConfigFile = 'config/disziplin_md_kw.yaml',
+              TrainingDate = '2018-02-12',
+              IndividualComments = '',
+              HtmlSelfContained = TRUE
+)
+
+batchCreateReports( PointDataConfigFile = 'config/pointdata_ot2.yaml',
+                    #WeaponConfigFile = 'config/conf_ruger_air_rifle.yaml',
+                    WeaponConfigFile = 'config/conf_xesse_eisen.yaml',
+                    RecentFiles = 1,
+                    PointDataDir = '/Users/abehrens/Downloads',
+                    #ReportConfigFile = 'config/disziplin_10m_LG.yaml',
+                    #ReportConfigFile = 'config/disziplin_25m_Prae.yaml',
+                    ReportConfigFile = 'config/disziplin_25m_speed.yaml',
+                    #ReportConfigFile = 'config/disziplin_md_kw.yaml',
+                    #TrainingDate = '2018-02-12',
+                    #ScaledDistance = 15,
+                    IndividualComments = ''
+)
+
+
+pointDataConfig = loadYamlConfig('config/pointdata_ot2.yaml')
+weaponConfig = loadYamlConfig('config/conf_xesse_rd.yaml')
+reportConfig = loadYamlConfig('config/disziplin_25m_Prae.yaml')
+PointDataFile = 'speed_20180212.csv'
+pointGroups =  loadPointData(paste(pointDataConfig$pointData.Path, PointDataFile, sep = '/'),pointDataType = pointDataConfig$pointData.Type)
+
+
+
+details = file.info(
+   list.files(
+      'C:\\Users\\Andrey.Behrens\\Desktop\\Stat\\input',
+      pattern = '*.csv$',
+      ignore.case = TRUE,
+      full.names = TRUE
+   ))
+
+details[with(details, order(as.POSIXct(mtime), decreasing = TRUE)), ]
+
+targets
+foo
+foo = scatt
+class(foo)
+
+bar = subset(foo, 
+       Waffe == 'Xesse' &
+       #Anschlag == 'Stehend, Rechts' &
+      Disziplin == 'Präzision' &
+        Entf == 25
+       )
+
+
+plot(bar$`10.0`
+     , type ='l'
+     , ylim = c(0,100)
+     , xlab = 'Entwicklung'
+     , ylab = 'Werte'
+     )
+warnings()
+
+lines(bar$`10a0`)
+plot(bar$Resultat
+     , type ='l'
+     , ylim = c(7,10.9)
+)

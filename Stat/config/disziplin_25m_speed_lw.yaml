@@ -1,0 +1,8 @@
+report.File: report/speed.Rmd
+report.OutputDir: output
+report.description: BDS 25m Speed
+report.Target: Speed
+report.DistanceUnit: m
+report.Distance: 25
+report.Robust: TRUE
+report.TargetPlotUnit: cm

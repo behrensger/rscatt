@@ -1,0 +1,8 @@
+report.File: report/report.Rmd
+report.OutputDir: output
+report.description: BDS 100m Präzision ZF
+report.Target: BDS1
+report.DistanceUnit: m
+report.Distance: 25
+report.Robust: TRUE
+report.TargetPlotUnit: cm

@@ -1,0 +1,152 @@
+
+/*Report Style Sheet
+
+Dunkelgrün: #0A2A29
+sehr helles grün: #EFFBFB
+
+Orange #FE642E
+
+*/
+
+
+body { 
+	color: #0A2A29;
+	background-color: #EFFBFB;
+	margin-top: 3em; 
+	margin-bottom: 5em; 
+	margin-left: 3em; 
+	margin-right: 5em; 
+}
+
+p {
+	margin-left: 1em; 
+	margin-right: 2em; 
+
+}
+
+table  {
+	width:80%;
+	margin-top: 4em; 
+	margin-bottom: 4em; 
+	margin-left: 4em; 
+	margin-right: 4em; 
+	border-spacing: 0.2em;
+	border-collapse: collapse;
+	/*table-layout:fixed*/
+}
+
+tbody {
+	border-top: 1px solid #FE642E;
+	border-bottom: 1px solid #FE642E;
+	border-spacing: 10px;
+}
+
+th {
+	border-top: 1px solid #FE642E;
+	border-bottom: 1px solid #FE642E;
+	border-collapse: collapse;
+	border-spacing: 10em;
+	margin-top: 2em; 
+	margin-bottom: 2em; 	
+
+}
+
+tr {
+	
+
+}
+
+h1{
+	font-family: Helvetica, Arial, sans-serif; 
+	font-size: xx-large; 
+	font-variant: small-caps;
+	padding-top: 4em;
+	padding-bottom: 2em;
+	padding-left: 1em;
+
+	color: #EFFBFB;
+	background-color: #0A2A29;
+}
+
+h2{
+	font-family: Helvetica, Arial, sans-serif; 
+	
+	font-size: x-large; 
+	padding-top: 4em;
+	padding-left: 1em;
+
+	padding-bottom: 0.1em;
+	color: #EFFBFB;
+	/*background-color: #0B615E;*/
+	background-color: #088A85;
+	margin-top: 4em;
+	
+}
+
+h3{
+	font-family: Helvetica, Arial, sans-serif; 
+	font-size: x-large; 
+	margin-top: 2em;
+	margin-bottom: 0;
+	padding-left: 1em;
+	color: #04B486;
+	border-bottom: .1em solid #FE642E;	
+}
+
+h4, h5, h6 {
+	color: #0B243B;
+}
+dt {
+	color: #FE642E;
+}
+
+dl {
+	margin-left: 1em;
+}
+
+dd {
+	margin-top: 0.5em;
+}
+
+ul {
+  list-style: none;
+  /*
+  margin-left: 1em;
+  
+  
+  */
+}
+
+ul {
+	
+	
+	/*list-style: disc outside Schwarzer Kreis
+	max-width: 15em;
+	border: 1px solid blue;
+	
+	*/
+	list-style: none
+	
+}
+
+li {
+	margin: 2px;
+  /*
+	background-color: lightblue;
+	list-style-position: outside;
+  margin-top: .4em;
+  text-indent: -1em;
+  
+  padding-left: 1em; 
+	padding-left: -1em; 
+  
+  */
+  text-indent: -0.9em;
+}
+
+
+li::before {
+  content: "• ";
+  color: #FE642E;
+  font-size: 1.5em;
+}

@@ -1,0 +1,9 @@
+#report.File: report/test.Rmd
+report.File: report/report.Rmd
+report.OutputDir: output
+report.description: BDS Präzision
+report.Target: BDS9
+report.DistanceUnit: m
+report.Distance: 25
+report.Robust: TRUE
+report.TargetPlotUnit: cm

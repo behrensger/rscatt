@@ -1,0 +1,107 @@
+#Auswertung CSV
+
+library(readr)
+setwd('/Users/abehrens/Desktop/Stat') #set directory
+setwd('C:\\Users\\Andrey.Behrens\\Desktop\\Stat\\') #set directory
+getwd()
+
+
+source("R/ScattDevReport.R", encoding = 'UTF-8')
+sourcefile = paste(getwd(), '/SCATT Auswertungen/SCATT Auswertungen.csv', sep = '')
+sourcefile = normalizePath(sourcefile)
+CreateScattReport(sourcefile, 'report/scatt_dev.Rmd', 'output/scatt_dev.html')
+
+
+
+scatt <- loadScattDevCsv(sourcefile)
+View(scatt)
+summary(scatt)
+
+source("R/ScattDevReport.R", encoding = 'UTF-8')
+
+round(4689/100)*100
+
+
+
+kable(table(scatt$Disziplin, scatt$Waffe))
+unique(scatt$Disziplin)
+length(unique(scatt$Anschlag))
+class(w)
+count.fields(w)
+
+x = table(scatt$Disziplin, scatt$Waffe)
+x
+pie(x)
+
+rrp = subset(scatt, Waffe == 'Ruger' & Visier == 'RedDot' & Disziplin == 'Präzision' & !is.na(Datum)& !is.na(Resultat))
+xop = subset(scatt, Waffe == 'Xesse' & Disziplin == 'Präzision'& !is.na(Datum)& !is.na(Resultat))
+rrp
+
+ylim = c(7,11)
+xlim = c(min(xop$Datum) - 2,max(xop$Datum) + 2)
+plot(xop$Resultat ~ xop$Datum
+     #, type = 'n'
+     , xlim = xlim
+     , ylim = ylim
+     , xlab = 'Zeit'
+     , ylab = 'Ergebnis'
+     #, lab = c(10,5,7)
+)
+
+
+all = subset(scatt, Disziplin == 'Präzision' & !is.na(Datum) & !is.na(Resultat))
+all_ruger = subset(all, Waffe == 'Ruger')
+rd = as.numeric(all_ruger$Datum)
+rr = all_ruger$Resultat
+
+ruger_reg = 
+  nls(rr ~ 
+        Asym / (1+ exp(1-log((rd-min(rd)+1))/teil
+                       ))
+      , start = list(Asym = 1, teil = 15)
+      )
+plot(all$Resultat ~ all$Datum, ,ylim = c(7,11))
+lines(all_ruger$Datum,predict(ruger_reg, all$Datum))
+
+library(stats)
+predict(ruger_reg, c = (2))
+
+
+summary(ruger_reg)
+
+   
+
+y = xop$Resultat
+x = as.double(xop$Datum) - min(as.double(xop$Datum)-1)
+x = as.double(xop$Datum)
+x
+foo = 
+nls(y ~ (a*x-b)^2 + c, start = list(a = 0.0001,b = 0.0001, c = 7))
+
+
+foo = nls(y ~ a*log(b/x), start = list(a = 1, b = 1), lower = list(b = 0.1), upper = list(b = 0.1))
+foo = nls(y ~ a*log(x), start = list(a = 1), upper = list(a = 2 ),algorithm = "port")
+
+xr = xop$Resultat
+xd = as.numeric(xop$Datum)
+xd = as.double(xop$Datum) - min(as.double(xop$Datum) - 1)
+
+foo = nls(xr ~ Asym/(1 + exp((xmid - log(xd - min(as.double(xd) - 1)))/15)), start = list(Asym = 1, xmid = 1))
+
+xd
+foo
+
+2/x
+
+
+plot(xop$Resultat ~ xop$Datum, ,ylim = c(7,11))
+lines(xd,predict(foo),lty = 2,col = "red",lwd = 3)
+
+log(4)
+plot(x-17500, y)
+d = x
+plot(10/(1+exp(-x/10)))
+     ,ylim = c(7,11)
+     )
+
+log(x-17000)

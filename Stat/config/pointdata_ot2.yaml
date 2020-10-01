@@ -1,0 +1,7 @@
+pointData.Unit: mm
+pointData.Type: OT2
+pointData.XyTopLeft: TRUE
+pointData.RelPOA: TRUE
+pointData.Path: input
+pointData.Pattern: '*.csv'
+

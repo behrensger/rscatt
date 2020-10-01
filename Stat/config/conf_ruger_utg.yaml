@@ -1,0 +1,17 @@
+#Weapon Description
+weapon: Ruger 10/22 UTG
+caliber: 0.22
+caliberUnit: inch
+click.x: 0.25
+click.y: 0.25
+click.Unit: inch
+click.Distance: 100
+click.DistanceUnit: yard
+goal.plate.time: 45
+
+goal.speed.time: 49
+goal.speed.first: 2.5
+goal.speed.rings: 300
+goal.precision: 200
+fallscheibe.type: KK	
+

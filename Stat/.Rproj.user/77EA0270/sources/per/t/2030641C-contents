@@ -1,0 +1,353 @@
+library(readr)
+library(knitr)
+library('rmarkdown', verbose = FALSE)
+
+
+loadScattDevCsv <-
+   function(filename)
+   {
+      if (is.null(filename)) {
+         stop(c("function needs a proper CSV file"))
+      }
+
+      #read stuff
+     filename = normalizePath(filename)
+      scatt <- read_delim(
+        filename,
+         ";",
+         escape_double = FALSE,
+         col_types = cols(Datum = col_date(format = "%d.%m.%Y")),
+         locale = locale(decimal_mark = ",", grouping_mark = "."),
+         trim_ws = TRUE
+      )
+
+      #remove empty lines
+      scatt = subset(scatt, !(is.na(Datum) &
+                                 is.na(Waffe) &
+                                 is.na(Disziplin)))
+
+
+      #preorder the data.frame
+      index <-
+         with(scatt, order(Datum, Waffe, Disziplin, Visier, Anschlag))
+      scatt = scatt[index, ]
+
+      #give it back
+      return(scatt)
+
+   }
+
+
+CreateScattReport <-
+   function(filename, reportFile, outputFile, HtmlSelfContained = TRUE) {
+      scatt = loadScattDevCsv(filename)
+
+
+      fig_dim = 5.0
+      render(
+         reportFile,
+         output_format = html_document(
+            toc = FALSE,
+            number_sections = FALSE,
+            section_divs = FALSE,
+            self_contained = HtmlSelfContained,
+            smart = TRUE,
+            theme = NULL,
+            highlight = NULL,
+            mathjax = NULL,
+            fig_width = fig_dim*2,
+            fig_height = fig_dim,
+            fig_retina = 2,
+            fig_caption = FALSE,
+            #dev = 'svgz'
+            dev = 'png'
+         ),
+         output_file = basename(outputFile),
+         output_dir = dirname(outputFile),
+         quiet = TRUE,
+         encoding = 'UTF-8'
+
+      )
+   }
+
+horizontalerLevel <-
+  function(y, x, farbe) {
+    abline(h = y, col = farbe, lwd = 0.1)
+    #text(y = y*1.02, x = x, paste(round(y, digits = 0),'%',sep = ''),cex = .5)
+    
+  }
+
+horizontaleRinge <-
+  function(y, x, farbe) {
+    abline(h = y, col = farbe, lwd = 0.1)
+    #text(y = y*1.01, x = x, paste(round(y, digits = 1),' Ringe',sep = ''),cex = .5)
+    
+  }
+
+
+
+PlotRingWerte <-
+   function(scatt, disziplin) {
+      all = subset(scatt, Disziplin == disziplin & !is.na(Datum)& !is.na(Resultat))
+      all_ruger = subset(all, Waffe == 'Ruger')
+      all_xesse = subset(all, Waffe == 'Xesse')
+      rrp = subset(all_ruger, Visier == 'RedDot')
+      xop = subset(all_xesse, Visier == 'Offen')
+      xrp = subset(all_xesse, Visier == 'RedDot')
+      
+      col_ruger = 'red'
+      col_xesse = 'blue'
+
+      #min max range  
+      mi = min(scatt$Resultat) - 0.5
+      mi = max(0, mi)
+      ma = max(scatt$Resultat) + 1.5
+      ma = min(ma, 11)
+      ylim = c(mi,ma)
+      xlim = c(min(scatt$Datum) - 2,max(scatt$Datum) + 2)
+
+
+      plot(scatt$Resultat ~ scatt$Datum
+           , type = 'n'
+           , xlim = xlim
+           , ylim = ylim
+           , main = paste('Disziplin',disziplin)
+           , xlab = "Entwicklung"
+           , ylab = 'Ergebnis/Schuss'
+           , lab = c(10,5,7)
+      )
+
+
+      plotType = 'p'
+      lines(rrp$Resultat ~ rrp$Datum
+            , type = plotType
+            , col = col_ruger
+            , pch = 1
+      )
+
+      lines(xop$Resultat ~ xop$Datum
+            , type = plotType
+            , col = col_xesse
+            , pch = 2
+      )
+
+      lines(xrp$Resultat ~ xrp$Datum
+            , type = plotType
+            , col = col_xesse
+            , pch = 3
+      )
+
+      #regression
+
+      #linear
+      ruger_reg = lm(all_ruger$Resultat ~ all_ruger$Datum)
+      xesse_reg = lm(all_xesse$Resultat ~ all_xesse$Datum)
+      abline(reg = ruger_reg, lwd = 2, col = col_ruger)
+      abline(reg = xesse_reg, lwd = 2, col = col_xesse)
+      
+      #nicht linear
+      rd = as.numeric(all_ruger$Datum)
+      xd = as.numeric(all_xesse$Datum)
+      rr = all_ruger$Resultat
+      xr = all_xesse$Resultat
+
+      ruger_reg = nls(rr ~ Asym / (1+ exp(1-log((rd-min(rd)+1))/teil)), start = list(Asym = 1, teil = 15))
+      xesse_reg = nls(xr ~ Asym / (1+ exp(1-log((xd-min(xd)+1))/teil)), start = list(Asym = 1, teil = 15))
+
+      lines(all_ruger$Datum,predict(ruger_reg),col = col_ruger, lwd = 2)
+      lines(all_xesse$Datum,predict(xesse_reg),col = col_xesse, lwd = 2)
+      
+
+      #indicator lines
+      indi_col = 'DarkGoldenRod'
+      horizontaleRinge(10, min(scatt$Datum) - 2, indi_col)
+      horizontaleRinge(10.5, min(scatt$Datum) - 2, indi_col)
+
+      legend(x = 'bottomright',
+             legend = c('Ruger Trend', 'Xesse Trend', 'Ruger, RedDot', 'X-esse, Offen', 'X-esse, RedDot','10.0 und 10.5 Ringe'),
+             col =    c(col_ruger,     col_xesse,     col_ruger,        col_xesse,     col_xesse,        indi_col),
+             pch = c(NA_integer_, NA_integer_, 1,2,3,NA_integer_),
+             inset = .04,
+             #title = 'Waffen',
+             seg.len = 2,
+             bty = 'n',
+             lwd = 1)
+
+
+   }
+
+
+
+
+Plot10Werte <-
+  function(scatt, disziplin) {
+    all = subset(scatt, Disziplin == disziplin & !is.na(Datum)& !is.na(Resultat))
+    rrp = subset(all, Waffe == 'Ruger' & Visier == 'RedDot')
+    xop = subset(all, Waffe == 'Xesse' & Visier == 'Offen')
+    xrp = subset(all, Waffe == 'Xesse' & Visier == 'RedDot')
+    
+    col_ruger = 'red'
+    col_xesse = 'blue'
+    
+    #min max range  
+    mi = min(scatt$`10.0`)
+    mi = max(0, mi)
+    ma = max(scatt$`10.0`)
+    ma = min(ma, 100)
+    ylim = c(mi,ma)
+    xlim = c(min(scatt$Datum) - 2,max(scatt$Datum) + 2)
+    
+    
+    plot(scatt$`10.0` ~ scatt$Datum
+         , type = 'n'
+         , xlim = xlim
+         , ylim = ylim
+         , main = paste('Disziplin',disziplin)
+         , xlab = 'Entwicklung'
+         , ylab = 'Prozent in der 10.0'
+         , lab = c(10,5,7)
+    )
+    
+    
+    plotType = 'p'
+    lines(rrp$`10.0` ~ rrp$Datum
+          , type = plotType
+          , col = col_ruger
+          , pch = 1
+    )
+    
+    lines(xop$`10.0` ~ xop$Datum
+          , type = plotType
+          , col = col_xesse
+          , pch = 2
+    )
+    
+    lines(xrp$`10.0` ~ xrp$Datum
+          , type = plotType
+          , col = col_xesse
+          , pch = 3
+    )
+    
+    #lineare regression
+    ruger = subset(all,  Waffe == 'Ruger')
+    xesse = subset(all,  Waffe == 'Xesse')
+    
+    ruger_reg = lm(ruger$`10.0` ~ ruger$Datum)
+    xesse_reg = lm(xesse$`10.0` ~ xesse$Datum)
+    abline(reg = ruger_reg, lwd = 2, col = col_ruger)
+    abline(reg = xesse_reg, lwd = 2, col = col_xesse)
+    
+    
+    #indicator lines
+    indi_col = 'DarkGoldenRod'
+    horizontalerLevel(20, min(scatt$Datum)-4, indi_col)
+    horizontalerLevel(30, min(scatt$Datum)-4, indi_col)
+    horizontalerLevel(40, min(scatt$Datum)-4, indi_col)
+    horizontalerLevel(50, min(scatt$Datum)-4, indi_col)
+    horizontalerLevel(60, min(scatt$Datum)-4, indi_col)
+    horizontalerLevel(70, min(scatt$Datum)-4, indi_col)
+    horizontalerLevel(80, min(scatt$Datum)-4, indi_col)
+    horizontalerLevel(90, min(scatt$Datum)-4, indi_col)
+    
+    
+    
+    
+    legend(x = 'bottomright',
+           legend = c('Ruger Trend', 'Xesse Trend', 'Ruger, RedDot', 'X-esse, Offen', 'X-esse, RedDot'),
+           col =    c(col_ruger,     col_xesse,     col_ruger,        col_xesse,     col_xesse),
+           pch = c(NA_integer_, NA_integer_, 1,2,3),
+           inset = .04,
+           #title = 'Waffen',
+           seg.len = 2,
+           bty = 'n',
+           lwd = 1)
+    
+    
+  }
+
+
+
+Plot10a0Werte <-
+  function(scatt, disziplin) {
+    all = subset(scatt, Disziplin == disziplin & !is.na(Datum)& !is.na(Resultat))
+    rrp = subset(all, Waffe == 'Ruger' & Visier == 'RedDot')
+    xop = subset(all, Waffe == 'Xesse' & Visier == 'Offen')
+    xrp = subset(all, Waffe == 'Xesse' & Visier == 'RedDot')
+    
+    col_ruger = 'red'
+    col_xesse = 'blue'
+    
+    #min max range  
+    mi = min(all$`10a0`)
+    mi = max(0, mi)
+    ma = max(all$`10a0`)
+    ma = min(ma, 100)
+    #ylim = c(mi,ma)
+    ylim = c(0,100)
+    xlim = c(min(all$Datum) - 2,max(all$Datum) + 2)
+    
+    
+    plot(scatt$`10a0` ~ scatt$Datum
+         , type = 'n'
+         , xlim = xlim
+         , ylim = ylim
+         , main = paste('Disziplin',disziplin)
+         , xlab = 'Entwicklung'
+         , ylab = 'Prozent des 10er Ringes'
+         , lab = c(10,5,7)
+    )
+    
+    
+    plotType = 'p'
+    lines(rrp$`10a0` ~ rrp$Datum
+          , type = plotType
+          , col = col_ruger
+          , pch = 1
+    )
+    
+    lines(xop$`10a0` ~ xop$Datum
+          , type = plotType
+          , col = col_xesse
+          , pch = 2
+    )
+    
+    lines(xrp$`10a0` ~ xrp$Datum
+          , type = plotType
+          , col = col_xesse
+          , pch = 3
+    )
+    
+    #lineare regression
+    ruger = subset(all,  Waffe == 'Ruger')
+    xesse = subset(all,  Waffe == 'Xesse')
+    
+    ruger_reg = lm(ruger$`10a0` ~ ruger$Datum)
+    xesse_reg = lm(xesse$`10a0` ~ xesse$Datum)
+    abline(reg = ruger_reg, lwd = 2, col = col_ruger)
+    abline(reg = xesse_reg, lwd = 2, col = col_xesse)
+    
+    
+    #indicator lines
+    indi_col = 'DarkGoldenRod'
+    horizontalerLevel(30, min(scatt$Datum)-4, indi_col)
+    horizontalerLevel(40, min(scatt$Datum)-4, indi_col)
+    horizontalerLevel(50, min(scatt$Datum)-4, indi_col)
+    horizontalerLevel(60, min(scatt$Datum)-4, indi_col)
+    horizontalerLevel(70, min(scatt$Datum)-4, indi_col)
+    horizontalerLevel(80, min(scatt$Datum)-4, indi_col)
+    horizontalerLevel(90, min(scatt$Datum)-4, indi_col)
+
+    
+    
+    legend(x = 'bottomright',
+           legend = c('Ruger Trend', 'Xesse Trend', 'Ruger, RedDot', 'X-esse, Offen', 'X-esse, RedDot'),
+           col =    c(col_ruger,     col_xesse,     col_ruger,        col_xesse,     col_xesse),
+           pch = c(NA_integer_, NA_integer_, 1,2,3),
+           inset = .04,
+           #title = 'Waffen',
+           seg.len = 2,
+           bty = 'n',
+           lwd = 1)
+    
+    
+  }

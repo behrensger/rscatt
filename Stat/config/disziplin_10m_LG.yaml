@@ -1,0 +1,8 @@
+report.File: report/report.Rmd
+report.OutputDir: output
+report.description: ISSF 10m Air Rifle
+report.Target: ISSF_10mAR
+report.DistanceUnit: m
+report.Distance: 10
+report.Robust: TRUE
+report.TargetPlotUnit: cm

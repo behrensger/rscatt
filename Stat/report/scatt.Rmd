@@ -1,0 +1,536 @@
+---
+  title: "`r createScattTitle(waf_all, ZuordnungWaffentypName(waffentyp), disziplin, entfernung)`"
+  output: html_document
+---
+
+##  Einführung
+
+###  Zielstellung
+
+- Beschreibung der bisherigen Entwicklung
+- Bestimmung des Entwicklungstrends
+- Hochrechnung über die Erreichung von Leistungszielen
+- Erkennung von Potentialen, also in welchem Teilbereich das größte Entwicklungspotential steckt.
+
+
+###  Datenbasis
+
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+
+trendAnschlag = getTrendAnschlag(waf_all)
+datenbasisTabelle = CreateDatenbasisTabelle(scatt, waf_all, waffentyp,disziplin, trendAnschlag)
+
+```
+
+
+`r kable(datenbasisTabelle, caption = 'Datenumfang', "html")  %>% row_spec(nrow(datenbasisTabelle), bold = T) `
+
+
+
+
+
+Nach Disziplinen verteilen sich die Trainingseinheiten wie folgt: 
+
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+
+trainingsTabelle = addmargins(table(scatt$Disziplin, scatt$Waffe))
+
+```
+
+
+
+`r kable(trainingsTabelle, caption = 'Verteilung Disziplin auf Waffen', "html") %>% row_spec(nrow(trainingsTabelle), bold = T) %>% column_spec(ncol(trainingsTabelle)+1, bold = T)`
+
+
+In der Annahme, dass die am häufigsten geübte Anschlagsart auch am wichtigsten ist, erfolgt die Trendberechnung mit dem dem Anschlag *`r trendAnschlag`*.
+
+Offensichtlich sind nur die Disziplinen *Präzision* und *Speed* relevant. Andere Disziplinen wurden in der Auswertung folgenden nicht weiter berücksichtigt. Die typische Trainingsdistanz beträgt `r median(waf_all$Entf)`m. Pro Woche wurden `r round(nrow(waf_all) / as.numeric (max(waf_all$Datum) - min(waf_all$Datum)) *7, digits = 1)` Trainingseinheiten mit SCATT geschossen. Hinzu kamen Trockentraining ohne Schussabgabe (etwa Zieh- und Bewegungsübungen), Training auf dem Schießstand, Theorie und körperliche Fitness.
+
+
+### Trainingseinheiten
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+nix = PlotScattSessions(scatt, 'SCATT', 15, 'Trainingseinheiten mit SCATT')
+```
+
+
+Live bedeutet hier Schüsse/Wettkämpfe mit anschließender elektronischer Auswertung der Scheiben.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+nix = PlotScattSessions(scatt, 'LIVE', 10, 'Wettkämpfe und Training auf dem Stand')
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+nix = PlotScattSessions(scatt, 'DRY', 5, 'Trockentraining')
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+nix = PlotScattSessions(scatt, 'ALL', 15, 'Alle Einheiten', 45)
+```
+
+
+Hinweis: Trockentraining, Wettkämpfe und Live-Training werden erst seit September 2018 protokolliert.
+
+
+###  Begriffsbestimmung
+
+*Disziplin Präzision* 
+
+: bedeutet dabei üblicherweise, dass in sechs Gruppen a fünf Schuss geschossen wird. Zielstellung ist die Entwicklung von Präzision und Genauigkeit ohne Zeitdruck. *Präzision* wird dabei zu etwa 1/3 mit der starken, 1/3 mit der schwachen und 1/3 mit beiden Händen geschossen (Kurzwaffe), bzw. abwechseln links und rechts bei Langwaffen. 
+
+*Disziplin Speed* 
+
+: ist ein Intervalltrainig. Geschossen wird n sechs Gruppe a fünf Schuss plus fünf ProbeSchuss.Pro Schuss stehen maximal drei Sekunden zur Verfügung, zwischen zwei Schussn ist ein Pause von sieben Kunden. Dieses Training wird als Training für den Erstschuss der BDS-Disziplinen *Speed*, *Fallscheibe* benutzt und natürlich für die Disziplin *Kombi*. 
+
+*Prognoseintervall*
+
+: Für die berechneten Regressionsgerade wird zusätzlich ein Prognoseintervall angegeben. Mit hoher Wahrscheinlichkeit befinden sich zukünftige Messwerte innerhalb des Intervalls. 
+
+Das *Konfidenzintervall*
+: bzw. der Erwartungsbereich, ist das Intervall im den sich 95% aller Messwerte befinden.  
+
+
+
+
+### Farb- und Symbolkodierung
+
+
+Bei der Auswertung der SCATT-Daten wird im Augenblick nicht zwischen verschiedenen Waffen eines Waffentyps unterschieden. Zur optischen Erkennung welche Trainingsession mit welcher Waffe geschossen wurde, wird durchgängig mit diesem Farbschema gearbeitet:
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+waffen = sort(unique(scatt$Waffe))
+m = matrix(nrow = length(waffen), ncol = 3)
+for (i in 1:length(waffen)) {
+  m[i,1] = waffen[i]
+  m[i,2] = ZuordnungWaffentypName(ZuordnungWaffe2KwLw(waffen[i]))
+  m[i,3] = GibFarbkodiertenKreis(waffen[i])
+}
+colnames(m) = c('Waffe', 'Waffentyp', 'Farbcode')
+cat(kable(m, escape = FALSE), sep = "\n")
+```
+
+
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+
+anschlaege = sort(unique(scatt$Anschlag))
+m = matrix(nrow = length(anschlaege) + 1, ncol = 3)
+for (i in 1:length(anschlaege)) {
+  m[i,1] = anschlaege[i]
+  typen = sort(unique(subset(scatt, Anschlag == anschlaege[i])$Waffentyp))
+  foo = ''
+  for (jj in 1:length(typen)) {
+    if (foo == '') {
+      foo = paste(ZuordnungWaffentypName(typen[jj]), sep = '')
+    } else {
+      foo = paste(foo, ZuordnungWaffentypName(typen[jj]), sep = ', ')
+    }
+  }
+  m[i,2] = foo
+  m[i,3] = GibFarbkodiertesSymbol(calcSymbolForAnschlag(anschlaege[i], 'nix'))
+}
+
+m[length(anschlaege) + 1, 1] = 'Trendanschlag (der am häufigsten genutze Anschlag)'
+m[length(anschlaege) + 1, 2] = 'Alle'
+m[length(anschlaege) + 1, 3] = GibFarbkodiertesSymbol(calcSymbolForAnschlag('nix', 'nix'))
+colnames(m) = c('Anschlag', 'Waffentyp', 'Symbol')
+
+
+x = kable(m, escape = FALSE)
+cat(row_spec(x, nrow(m), bold = T), sep = "\n")
+
+```
+
+
+
+## Zielsetzung
+
+### Vorüberlegungen zu Leistungszielen
+
+- der *f-koeff* ist Langwaffen-Disziplien auf 45 und für Kurzwaffen-Disziplinen auf 25 zu stellen. Ein höherer *f-koeff* verlängert die Sprunglänge beim Abzug.
+- Um bei BDS-Meisterschaften zu gewinnen sind >= 195 Ringe nötig, 2/3 in die 10, 1/3 in die 9, 1/4 in M. Wird zur Vereinfachung mit Längenmaßen (also dem Durchmesser von Streu- und Zielkreis) gerechnet, ergeben sich folgende Maße
+    - 50mm Durchmesser Zielkreis 10.0
+    - 80% Überstimmung mit dem Zielkreis (also einem Wert von 80% 10.0) ergibt einen Treffbereich von 40mm
+    - Um sicher in der 10 zu bleiben, muss die Sprunglänge < (40mm / 2 ) = 20mm bleiben.
+- Damit ergeben sich folgende Zielwerte, die konstant bei jedem Schuss gehalten werden müssen:
+    - 10.0 >= 60%
+    - 10.5 >= 30%
+    - Abstand <= 20mm
+- Da 2/3 aller Schuss in der 10 sein müssen, sind folgende Sicherheitszuschläge für Kurzwaffen notwendig:
+    - 10.0 >= 70%
+    - 10.5 >= 35%
+    - Abstand <= 15mm
+- Um die >= 70% der Zeit im 10.0-Kreis zu bleiben, braucht es gewisse Haltefähigkeiten. Die Haltefähigkeit äußert sich in diesen Werten
+    - L <= 225
+    - L/250 <= 225 L und L/250 sind die Weglängen, die die Mündung eine, bzw. 1/4 Sekunde vor dem Schuss hat. Die Weglänge kann als die Haltekraft gesehen werden und bestimmt die Halteruhe. Die notwendigen Zielwerte wurden geschätzt. L/250 steht im Zusammenhang mit dem Wert Abstand. Eine steigende Weglänge in den letzten 250ms führt zu einem Anstieg von Abstand.
+    - 10a0 >= 90% (70% 10.0 + 20 Prozentpunkte). Gemeint ist hier die Fähigkeit, die Waffe in der letzten Sekunde vor dem Schuss zu 90% in einem Halteraum zu halten, der der 10 entspricht.
+    - 10a5 >= 45%, also 45% der Zeit den Halteraum der Innenzehn zu erreichen.
+    
+
+
+### Leistungsziele
+
+Die Leistungsziele basieren initial auf Trainingskonzepten für ISSF-Luftpistole und wurden adaptiert um BDS-Meisterschaften zu gewinnen. Grundsätzliches Trainingsziel ist der Gewinn von Meistertiteln bei einer Deutschen Meisterschaft bis 2020.
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+ zlwp = gibLeistungsziele('LW', 'Präzision')
+ zkwp = gibLeistungsziele('KW', 'Präzision')
+ zlws = gibLeistungsziele('LW', 'Speed')
+ zkws = gibLeistungsziele('KW', 'Speed')
+ zlwfskk = gibLeistungsziele('LW', 'Fallscheibe/KK')
+ zkwfskk = gibLeistungsziele('KW', 'Fallscheibe/KK')
+ 
+ 
+      L1000 = c(zlws$L1000, zlwp$L1000, zkws$L1000, zkwp$L1000,zlwfskk$L1000,zkwfskk$L1000)
+      L250 = c(zlws$L250, zlwp$L250, zkws$L250, zkwp$L250,zlwfskk$L250,zkwfskk$L250)
+      P10a0 = c(zlws$P10a0, zlwp$P10a0, zkws$P10a0, zkwp$P10a0,zlwfskk$P10a0,zkwfskk$P10a0)
+      P10a5 = c(zlws$P10a5, zlwp$P10a5, zkws$P10a5, zkwp$P10a5,zlwfskk$P10a5,zkwfskk$P10a5)
+      P10_0 = c(zlws$P10_0, zlwp$P10_0, zkws$P10_0, zkwp$P10_0,zlwfskk$P10_0,zkwfskk$P10_0)
+      P10_5 = c(zlws$P10_5, zlwp$P10_5, zkws$P10_5, zkwp$P10_5,zlwfskk$P10_5,zkwfskk$P10_5)
+      Abstand = c(zlws$Abstand, zlwp$Abstand, zkws$Abstand, zkwp$Abstand,zlwfskk$Abstand,zkwfskk$Abstand)
+      Ringe = c(zlws$Ringe, zlwp$Ringe, zkws$Ringe, zkwp$Ringe,zlwfskk$Ringe,zkwfskk$Ringe)
+      Zeit = c(zlws$Zeit, zlwp$Zeit, zkws$Zeit, zkwp$Zeit,zlwfskk$Zeit,zkwfskk$Zeit)
+
+
+leistungsziele = data.frame(L1000, L250,P10a0, P10a5, P10_0, P10_5,Abstand, Ringe, Zeit)
+colnames(leistungsziele) = c('Halteruhe L', 'Halteruhe L/250', 'Genauigkeit 10a0', 'Genauigkeit 10a5', 'Präzision 10.0', 'Präzision 10.5', 'Abzug Abstand', 'Ergebnis / Schuss', 'Zeit / Schuss')
+rownames(leistungsziele) = c('Langwaffe/Speed', 'Langwaffe/Präzision', 'Kurzwaffe/Speed', 'Kurzwaffe/Präzision','Langwaffe/Fallscheibe/KK','Kurzwaffe/Fallscheibe/KK')
+      
+
+cat(kable(leistungsziele), sep = "\n")
+
+
+```
+
+
+
+
+### Aktuellen Leistungserfüllung in Bezug auf die Zielwerte
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+data = createLeistungszielDatafram(waf_all, trendAnschlag, waffentyp, disziplin)
+par(bg = BG_COLOR,
+    col = COLOR_ORANGE,
+    col.axis = FG_COLOR,
+    col.lab = FG_COLOR,
+    col.main = FG_COLOR,
+    col.sub         = FG_COLOR
+)
+radarchart(
+  data  ,  axistype = 1 ,  
+  #custom polygon  
+  ,  plwd = 4 ,
+  #custom the grid
+  cglcol = "#A9E2F3",  cglty = 1,  axislabcol = "#A9E2F3",
+  #caxislabels=seq(minval,maxval,10),
+  pfcol = c('#0B615E44'),
+  pcol = rgb(0.2, 0.5, 0.5, 1) ,
+  cglwd = 0.8,
+  #custom labels
+  vlcex = 0.8
+)
+```
+
+Die Zielerfüllung prozentualer Werte wurde in Relation zur Zielstellung berechnet. Als Beispiel *10a0.* Angenommen das Ziel sei *80%* und die Trendgerade zeigt aktuell auf einen erreichten Wert von *40%*, dann ist das Ziel zur Hälfte erreicht und das Radardiagramm zeigt eine Erfüllung von *50%*.
+
+
+
+## Entwicklung Genauigkeit
+
+Genauigkeit ist die Fähigkeit eine möglichst enge Schussgruppe zu schießen. Die Genauigkeit wird in Scatt durch den Wert *10a0* bzw. *10a5* gemessen. Dabei ist *10a0* prozentuale Genaugkeit in Bezug auf den 10er Ring und  *10a5* die Genauigkeit in Prozent des Innen-Zehners.
+
+Ein Wert von *100%* bedeutet, dass der sich in der letzten Sekunde vor dem Schuss die Waffe zu *100%* innerhalb eines Kreises bewegte, welche dem 10er Ring entspricht. Dieser Kreis muss sich dabei nicht zwingend über der tatsächlichen 10 befinden.
+
+Bei der Genauigkeit gibt es zwei wesentliche Einflussgrößen. Zum einen den *L-Wert*, die Bewegungslänge in der letzten Sekunde vor dem Schuss, und das Abzugsverhalten. Das Abzugsverhalten wird gemessen durch den *L/250*-Wert, also die Bewegungslänge die letzten *250ms* vor dem Schuss und des *Abstand*es, also etwaiger Sprünge der Waffe im Moment des Schusses.
+
+### L - Halteweglänge in mm
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+regression = PlotScattAspekt(waf_all, TrainingsFokus, 'L', 'Halteweglänge L in mm', 50, trendAnschlag, 'bottomleft', 'mm', 'nnls',gibZiel(waffentyp,disziplin)$L1000, title = 'Entwicklung')
+
+
+cat(printTrendFormel(regression), sep = "\n")
+
+
+```
+
+`r printWannLeistungziel(regression, gibZiel(waffentyp,disziplin)$L1000, 'mm', 'sinkt')`
+
+
+### L/250 - Halteweglänge in mm
+
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+regression = PlotScattAspekt(waf_all, TrainingsFokus, 'L/250', 'Halteweglänge L/250 in mm', 50, trendAnschlag, 'bottomleft', 'mm', 'ln',gibZiel(waffentyp,disziplin)$L250, title = 'Entwicklung')
+
+cat(printTrendFormel(regression), sep = "\n")
+
+
+
+```
+
+`r printWannLeistungziel(regression, gibZiel(waffentyp,disziplin)$L250, 'mm', 'sinkt')`
+
+
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+waf_all$Relation = (100 / waf_all$L * waf_all$`L/250`) - 100
+nix = PlotScattRelation(waf_all,trendAnschlag,'L/250 > L','L/250 < L',leistungsziel = 0, ylim = c(-25, 25), title = 'Verhältnis zwischen L und L/250')
+```
+
+Ist *L/250* größer als *L*, liegt ein Abzugsfehler vor. Dabei wurde in den letzten 250 Millisekunden (der unbewusste Reaktionszeit) vor dem Schuss eine zusätzliche Bewegung in die Waffe gebracht. *L/250* sollte deshalb immer *<= L* sein.
+
+Bei dynamischen Disziplinen ist *L/250* praktisch immer deutlich kleiner als *L*, da die Waffe erst unmittelbar beim Schuss zur Ruhe kommt.
+
+
+
+
+### Abstand - Sprunglänge im Moment des Schusses
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+regression = PlotScattAspekt(waf_all, TrainingsFokus, 'Abstand', 'Sprunglänge in mm', 10, trendAnschlag, 'bottomleft', 'mm', 'ln',gibZiel(waffentyp,disziplin)$Abstand)
+
+cat(printTrendFormel(regression), sep = "\n")
+```
+
+`r printWannLeistungziel(regression, gibZiel(waffentyp,disziplin)$Abstand, 'mm', 'sinkt')`
+
+
+
+### 10a0 - Genauigkeit des Haltekreises
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+regression = PlotScattAspekt(waf_all, TrainingsFokus, '10a0', '10a0 in Prozent', 10, trendAnschlag, 'bottomright', '%', 'nls',gibZiel(waffentyp,disziplin)$P10a0, title = 'Entwicklung')
+
+cat(printTrendFormel(regression), sep = "\n")
+
+```
+
+`r printWannLeistungziel(regression, gibZiel(waffentyp,disziplin)$P10a0, '%', 'steigt')`
+
+
+### 10a5 - Genauigkeit des Haltekreises
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+regression = PlotScattAspekt(waf_all, TrainingsFokus, '10a5', '10a5 in Prozent', 10, trendAnschlag, 'topleft', '%','ln',gibZiel(waffentyp,disziplin)$P10a5, title = 'Entwicklung')
+
+
+cat(printTrendFormel(regression), sep = "\n")
+```
+
+`r printWannLeistungziel(regression, gibZiel(waffentyp,disziplin)$P10a5, '%', 'steigt')`
+
+
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+waf_all$Relation = (100/(waf_all$`10a0`*0.5) * waf_all$`10a5`) - 100
+nix = PlotScattRelation(waf_all,trendAnschlag,'10a5 > (1/2 10a0)','10a5 < (1/2 10a0)',leistungsziel = 0, 'Verhältnis zwischen 10a0 und 10a5', updown = FALSE, ylim = c(-50, 50))
+```
+
+
+## Entwicklung Präzision
+Präzision bedeutet, dass die Mitte einer Schussgruppe in der Mitte einer Zielschiebe liegt. Die Präzision wird, neben der Visiereinstellung und der Genauigkeit, von der Fähigkeit beeinflusst, die Waffe wiederholbar exakt auf den Haltepunkt auszurichten.
+
+Scatt misst die Präzision über die Werte *10.0* für Pistolen bzw. *10.5* für Langwaffen.
+
+Im Training ist es sinnvoll sich zunächst auf *10.0* und bei Erreichung eines Levels >= 90 auf *10.5* zu konzentrieren.
+
+### 10.0 
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+regression = PlotScattAspekt(waf_all, TrainingsFokus, '10.0', '10.0 in Prozent', 10, trendAnschlag, 'topleft', '%','ln',gibZiel(waffentyp,disziplin)$P10_0, title = 'Entwicklung')
+
+
+```
+
+`r printTrendFormel(regression)`
+
+`r printWannLeistungziel(regression, gibZiel(waffentyp,disziplin)$P10_0, '%', 'steigt') `
+
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+waf_all$Relation = (100 / (waf_all$`10a0`- 20) * waf_all$`10.0`) - 100
+nix = PlotScattRelation(waf_all,trendAnschlag,'10.0 > (80% 10a0)','10.0 < (80% 10a0)',leistungsziel = 0, 'Verhältnis zwischen 10a0 und 10.0', updown = FALSE, ylim = c(-100, 100))
+```
+
+Ziel ist es, dass *10.0* ca. *80%* des *10a0*-Wertes erreicht.
+
+### 10.5 
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+regression = PlotScattAspekt(waf_all, TrainingsFokus, '10.5', '10.5 in Prozent', 10, trendAnschlag, 'topleft', '%','ln',gibZiel(waffentyp,disziplin)$P10_5, title = 'Entwicklung')
+
+
+```
+
+`r printTrendFormel(regression)`
+
+`r printWannLeistungziel(regression, gibZiel(waffentyp,disziplin)$P10_5, '%', 'steigt') `
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+waf_all$Relation = (100/(waf_all$`10.0`*0.5) * waf_all$`10.5`)-100
+nix = PlotScattRelation(waf_all,trendAnschlag,'10.5 > (1/2 10.0)','10.5 < (1/2 10.0)',leistungsziel = 0, 'Verhältnis zwischen 10.0 und 10.5', updown = FALSE, ylim = c(-100, 100))
+```
+
+Ziel ist es, dass *10.5* mindestens *50%* von *10.0* hat. Wird der Wert unterschritten, ist der Haltepunkt nicht richtig und der der Zehner-Ring wird lediglich angekratzt.
+
+
+## 10.0 / Abstand
+Das Verhältnis von 10.0 zum Abstand ist eine alternative Sichtweise auf die Ergebnisse und Beschreibt letztlich die Qualität der Präzision bzw. auch die Trefferwahrscheinlichkeit. Dabei können Mängel in der Zielpräzision durch gute Abzugskontrolle ausgeglichen werden.
+
+In dieser Rechnung würde für einen Gewinn der Deutschen Meisterschaft ein Wert <= 0.3 benötigt und entspräche in der Praxis >= 195 von 200 Ringen.
+
+Berechnung ist 1/(10.0 / Abstand)
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+hauptanschlag = subset(scatt, Anschlag == trendAnschlag)
+regression = PlotScattAspekt(hauptanschlag, TrainingsFokus, 'Q10Abstand', 'Prozent pro Millimeter', 0.3, trendAnschlag, 'topleft', ' %/mm','nls',0.3)
+
+```
+`r printTrendFormel(regression)`
+
+`r printWannLeistungziel(regression, .3, ' %/mm', 'sinkt') `
+
+
+
+## Ergebnisse
+
+Das Ergebnis ist ein Punkt- bzw. Ringwert, welcher das Zusammenspiel von Genauigkeit und Präzision und eventuell weiterer Faktoren wie Einhaltung von Zeitvorgaben bzw. Geschwindigkeit ausdrückt.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+regression = PlotScattAspekt(waf_all, TrainingsFokus, 'Resultat', 'Ringe pro Schuss', 1, trendAnschlag, 'bottomright', ' Ringe','nls',gibZiel(waffentyp,disziplin)$Ringe)
+
+```
+
+`r printTrendFormel(regression)`
+
+`r printWannLeistungziel(regression, gibZiel(waffentyp,disziplin)$Ringe, 'Ringen/Schuss', 'steigt') `
+
+Für die Berechnung des Trneds wurde nur der Anschlag *`r trendAnschlag`* benutzt. SCATT benutzt bei der Ergebnisbestimmung Zehntel-Ringe. Zur Ergebnisabschätzung auf ganzzahlige Ringwerte müssen ca. 0,5 Ringe abgezogen werden. Als Beispiel: SCATT berechnet ein Ergebnis von 10.0. Abzüglich 0.5 Ringe würde jeder Schuss im Mittel 9.5 Ringe bringen, also hälftig in der 10 und 9 liegen. Für Leistungsziele wurde ebenfalls die Zehntelwertung benutzt.
+
+
+
+##  Untersuchung auf Korrelation zwischen den Daten
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+korrelation_p = 0.05
+korrelation_limit = 0.6
+col.names = c('10.0', '10.5', '10a0', '10a5','Resultat', 'L', 'L/250', 'Abstand', 'Schusszeit')
+```
+
+
+###  Korrelation der Einzelaspekte
+```{r echo=FALSE, fig.height=5, fig.width=5, message=FALSE, warning=FALSE}
+liste  = subset(waf_all, Anschlag == trendAnschlag)
+
+corr = calc_Correlation(liste)
+
+#Ausgabe Korrelation als Grafik
+ggcorr(
+  label_color = FG_COLOR,
+  color = FG_COLOR,
+  data = NULL,
+  geom = "circle",
+  max_size = 15,
+  #min_size = 4,
+  cor_matrix = corr$r,
+  method = c("pairwise", "pearson"),
+#  method = c("na.or.complete", "spearman"),
+  nbreaks = 6,
+  low = COLOR_ORANGE,
+  #mid = "#EEEEEE", 
+  high = "#2EFEC8",
+  label = TRUE
+) + theme(line = element_line(colour = FG_COLOR, color = FG_COLOR),
+          text = element_text(colour = FG_COLOR, color = FG_COLOR),
+          rect = element_rect( colour = BG_COLOR,color = BG_COLOR, fill = BG_COLOR),
+          panel.background = element_rect(fill = BG_COLOR),
+          strip.background = element_rect(fill = BG_COLOR),
+          plot.background = element_rect(colour = BG_COLOR,fill = BG_COLOR),
+          plot.margin = unit(c(0,0,0,0), "cm")
+)
+
+```
+
+
+*Beobachtung 2018-04* 
+
+: Es scheint so, als wenn Training an einem Einzelaspekt zu einem Anstieg der Korrelation zwischen *Resultat* und dem Einzelaspekt führt. Ein solcher Anstieg wäre auch nachvollziehbar, da die Beeinflussung des Resultats durch Training Sinn des Trainings ist.
+
+: Aus der Beobachtung lässt sich möglicherweise in Umkehrung ein Trainingsbedarf schließen. Erfolgreiches Training zeigt sich im Anstieg der Korrelation. Trainingsrückstände zeigen sich in einer Verringerung der Korrelation.
+
+: In 2018-04 lag der Trainingsfokus klar auf *Abstand*. Für Präzision ist die Korrelation zwischen *Resultat* und *Abstand* $-0.7$. Für Speed/Kurzwaffe dagegen $-0.1$. 
+
+: Trainingsfokus für Mai sollte auf *L* und *L/250* liegen
+
+
+
+###  Abhängigkeiten der wichtigsten Aspekte
+```{r echo=FALSE, fig.height=6, fig.width=6, message=FALSE, warning=FALSE}
+mindestRelevanz = median(abs(corr$r))
+x = corr$r
+for (r in seq(nrow(x))) {
+  for (c in seq(ncol(x))) {
+    if (x[r, c] == 1) {
+      x[r, c] = 0
+      break
+    } else {
+      x[r, c] = 0
+    }
+  }
+}
+for (r in seq(nrow(x)))
+  if (r > 1) {
+  for (c in seq(ncol(x)))
+    if (x[r, c] == 1 || abs(x[r, c]) > mindestRelevanz) {
+      x[r, c] = 0 
+    }
+  }
+
+
+
+#transpose ändert die Zeigerrichtung
+x = t(x)
+network = graph_from_adjacency_matrix(
+  (x), weighted = TRUE, mode = "directed")
+deg = degree(network, mode = "all")
+
+  par(bg = BG_COLOR,
+        col = FG_COLOR,
+        col.axis = FG_COLOR,
+        col.lab = FG_COLOR,
+        col.main = FG_COLOR,
+        col.sub         = FG_COLOR
+    )
+plot(network, layout = layout.circle, main = NULL, vertex.size = deg*10, , vertex.color = COLOR_HELLGRUEN, edge.color = COLOR_ORANGE, label.color = COLOR_ORANGE)
+
+```
+
+Als Mindestrelevanz zur Darstellung wurde der absolute Durchschnitt `r round(mindestRelevanz, digits=1)` aller Korrelationen benutzt. Die Pfeilrichtung ist dabei die Richtung der Abhängigkeit und kann gelesen werden wie "Das Resultat ist abhängig von X10.0, X10a0, ...". Desto mehr Pfeile ein Teilaspekte hat, desto höher ist die Bedeutung dieses Aspekts für das Gesamtergebnis.
+
+Bei geschwindigkeitsabhängigen Disziplinen wie Speed oder Fallscheibe hat die Geschwindigkeit eine scheinbar geringen Einfluss auf das Ergebnis. Ursache dafür ist, dass im Training die Schusszeit ziemlichst konstant ist. 
+
+
+##  Abschluss
+
+###  Reportdatum
+Der Report wurde am `r Sys.Date()` aus den SCATT-Aufzeichnungen in der Datei <<*`r DatenbasisDatei`*>> erstellt.
+
+

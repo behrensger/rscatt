@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1520088505644.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2011431544",
+    "id" : "2030641C",
+    "lastKnownWriteTime" : 1520090614,
+    "last_content_update" : 1520090614972,
+    "path" : "~/Desktop/Stat/R/ScattDevReport.R",
+    "project_path" : "R/ScattDevReport.R",
+    "properties" : {
+        "cursorPosition" : "101,34",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

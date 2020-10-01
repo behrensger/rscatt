@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1519419628038.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3924122420",
+    "id" : "FB82198E",
+    "lastKnownWriteTime" : 1520109906,
+    "last_content_update" : 1520109906551,
+    "path" : "~/Desktop/Stat/testOSX.R",
+    "project_path" : "testOSX.R",
+    "properties" : {
+        "cursorPosition" : "30,21",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

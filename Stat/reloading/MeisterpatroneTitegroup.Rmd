@@ -1,0 +1,86 @@
+---
+title: "Perfekte KW-Patrone mit Titegroup"
+output: 
+  html_document: 
+    highlight: textmate
+    theme: spacelab
+    toc: no
+  html_notebook:
+    highlight: textmate
+    theme: cosmo
+    toc: no
+---
+
+
+
+
+
+#Zielsetzung
+
+Im Rahmen der Zielsetzung "Deutscher Meister"-Werden beschreibt soll dieses Dokument den Erkenntnisprozess zur Findung der perfekten Match-Patrone beschreiben.
+
+  1. Perfekte Match-Munition entwickeln. Eine perfekte Matchpatrone soll aus der PPQ einen Streukreis <= 6cm und aus der HPS einen Streukreis <= 2.5cm erreichen. Weitere Ziele für die perfekte Patrone sind geringe Herstellungskosten und ein möglichst geringes Hochschlagen der Waffe bei sicherem Erreichen des Mindestimpulses. Denkbar ist, dass die Zielstellung nicht mit einem Patronentyp erreicht wird, sondern das für unterschiedliche Disziplinen verschiedene Munitionssorten benutzt werden müssen.
+  2. Fehler bzw. Fehlerbereiche finden
+  3. Untersuchung der Arbeitsmethodik um Fehlerquellen auszuschließen
+  4. Statistische Rechnungen und Methoden erlernen und verstehen
+  
+  
+
+
+
+##Pulverschieber MP
+### Beschreibung
+  - Dillon 650 XL mit Pulverschieber/Pulverfüller
+  
+### Prüfung der Dosiergenauigkeit
+
+Zur Prüfung Hülsen `r mp_zahlen$n` mit 3.1gr Pulver Titegroup befüllt und anschließend das Pulver mit der Waage MW gewogen. Aus den Messergebnissen lassen sich ableiten:
+
+  - Mittelwert = `r round(mp_zahlen$mean,2)` bei `r mp_zahlen$n` Proben und einer Standardabweichung `r round(mp_zahlen$sd,3)`
+  - Min/Max/Spannweite = `r mp_zahlen$min`/`r mp_zahlen$max`/`r mp_zahlen$spread` 
+  - Median = `r mp_zahlen$median`
+  - Modalwert (häufigster Messwert) = `r mp_zahlen$modal`
+  - Fehlerzahl (Abweichung > `r mp_zahlen$sd_max`fache SD) = `r mp_zahlen$failure`/100    
+
+
+
+  Die Messwerte im Einzelnen:
+  
+```{r echo=FALSE}
+plotMesswerte(mp_values, mp_zahlen, 'gr')
+```
+
+  
+```{r echo=FALSE}
+hist(mp_values, breaks = seq(3, 3.3, 0.025), col = "blue", xlab = "Pulvermenge in Grain", ylab = "Anzahl", ylim = c(0,15), main = "Histogram Messversuche") 
+
+```
+
+
+
+#Test mit Speer 124gr TMJ mit einer Ziel-OAL 30.00 und 3.9gr Titegroup
+  
+  
+
+  - Mittelwert = `r round(oal_zahlen$mean,2)` bei `r oal_zahlen$n` Proben und einer Standardabweichung `r round(oal_zahlen$sd,3)`
+  - Min/Max/Spannweite = `r oal_zahlen$min`/`r oal_zahlen$max`/`r oal_zahlen$spread` 
+  - Median = `r oal_zahlen$median`
+  - Modalwert (häufigster Messwert) = `r oal_zahlen$modal`
+  - Fehlerzahl (Abweichung > `r oal_zahlen$sd_max`fache SD) = `r oal_zahlen$failure`/100    
+
+
+
+  Die Messwerte im Einzelnen:
+  
+
+```{r echo=FALSE}
+plotMesswerte(oal_value, oal_zahlen, 'gr')
+```
+
+```{r echo=FALSE}
+hist(oal_value, breaks = seq(29.5, 30.5, 0.05), col = "blue", xlab = "Pulvermenge in Grain", ylab = "Anzahl", 
+     ylim = c(0,20), 
+     main = "Histogram OAL") 
+
+```
+### Fazit

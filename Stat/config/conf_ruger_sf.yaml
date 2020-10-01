@@ -1,0 +1,16 @@
+#Weapon Description
+weapon: Ruger 10/22 Spitfire
+caliber: 0.22
+caliberUnit: inch
+click.x: 1.55
+click.y: 1.55
+click.Unit: cm
+click.Distance: 100
+click.DistanceUnit: m
+goal.plate.time: 45
+goal.speed.time: 42
+goal.speed.first: 2.5
+goal.speed.rings: 300
+goal.precision: 200
+fallscheibe.type: KK	
+

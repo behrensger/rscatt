@@ -1,0 +1,201 @@
+---
+title: "`r TrainingDateString`: `r reportConfig$report.description` -- `r median(pointGroups[,'distance'])``r reportConfig$report.DistanceUnit` -- `r weaponConfig$weapon`"
+output: html_document
+---
+
+
+## Individuelle Notizen 
+`r IndividualComments`
+
+## Überblick -- Schussgruppen
+
+### Unveränderte Schussgruppen
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+kable(buildShotGroupSummaryTable(pointGroups, pointDataConfig, weaponConfig, reportConfig, NULL) , format = "html", output = F, align = c("c", "c", "c", "c","c","c","c","c","c"), escape = F, table.attr="class='table table-striped table-hover'")
+```
+
+
+
+
+### Nach angenommener, optimaler Visier-Korrektur
+
+Im Abschnitt *Visiereinstellungen* wird eine Visiereinstellung berechnet, die zum bestmöglichen Ergebnis führen würde. Nach den vorgeschlagenen Korrekturen würde das Ergebnis wie folgt aussehen:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+correctionClicks = calculateSightCorrection(pointGroups, pointDataConfig, reportConfig, weaponConfig)
+kable(buildShotGroupSummaryTable(pointGroups, pointDataConfig, weaponConfig, reportConfig, correctionClicks), format = "html", output = F, align = c("c", "c", "c", "c","c","c","c","c","c"), escape=F,table.attr="class='table table-striped table-hover'")
+```
+
+
+
+
+### Erläuterungen
+
+- *Hits* sind die Anzahl der Treffer einer Schussgruppe. Schüsse die außerhalb der Scheibe liegen, können naturgemäß nicht dargestellt werden. 
+- *Rings* ist das erreichte Schießergebnis und 
+- *Max Rings* das maximal mögliche Ergebnis.
+- *Mean* Ist durch ist das durchschnittliche Ergebnis eines Ringes und 
+- *Median* der typische, also am häufigsten getroffene, Ring.
+- *BDS9-Tenth* Durchschnittliche Ringe pro Schuss bei Zehntelwertung auf einer BDS9-Scheibe. Die Berechnung der Zehntel erfolgt unabhängig vom Scheibentyp immer auf der BDS9-Scheibe für Kurzwaffen.
+- *Sigma* gibt den Radius des Kreises an, der mit einer 39%igen Wahrscheinlichkeit getroffen wird. Aus *Sigma* lässt sich die Wahrscheinlichkeit eines Treffers für eine bestimmte Entfernung berechnen. Damit ist *Sigma* ein Wert für die Dichte der Schussgruppe und eine zentrale Kenngröße der Schusspräzision. Auf <a href="http://ballistipedia.com/index.php?title=Closed_Form_Precision">http://ballistipedia.com</a> gibt es weitere Erklärungen.
+- *Dist POA* ist der Abstand zum Scheibenmittelpunkt, dem Point Of Aim, und damit ein Maß für die Präzision.
+- *Circle* ist der Durchmesser eines Kreises, welche die Schussgruppe vollständig umschließt. *Circle* ist ein gebräuchlicher und einfach zu ermittelndes Maß der Genauigkeit. Da *Circle* nicht die Dichte der Schussgruppe berücksichtigt, ist dieses Maß für die Ermittlung von Trefferwahrscheinlichkeiten irrelevant.
+
+
+### Visiereinstellungen
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+kable(buildSightSettingsTable(pointGroups, pointDataConfig, weaponConfig, reportConfig), format = "html", output = F, align = c("c", "c", "c"), escape = F, table.attr = "class='table table-striped table-hover'")
+
+
+
+xy = getXYMatrixCorrected(pointGroups, pointDataConfig, weaponConfig, reportConfig)
+standard_x = gibStandardZahlen(xy[,'x'], 2)
+standard_y = gibStandardZahlen(xy[,'y'], 2)
+
+
+```
+
+Die statistische Signifikanz, also die Aussagekräftigkeit, der zugrundeliegenden Berechnungen ist *`r calcHotellingSigni(pointGroups, pointDataConfig, weaponConfig, reportConfig)`*. Bei der Berechnung der Visiereinstellung wurde `r if (reportConfig$report.Robust == TRUE) {  'ein'} else {  'kein' }` gegen Ausreisser robuster Algorithmus benutzt. 
+
+
+Eine Korrektur der Visiereinstellungen sollte nur vorgenommen werden, wenn die Signifikanz *high* or *very high* ist. Neben einer falschen Visiereinstellungen können ungenaue Schüsse durch die Schussballistik, Witterungseinflüsse oder Schützenfehler entstehen. 
+
+
+  - Median X: `r standard_x$median`
+  - Standardabweichung X: `r standard_x$sd`
+  - Standardfehler X: `r standard_x$se`
+  - Fehlerzahl X: `r standard_x$failure`
+  
+  - Median Y: `r standard_y$median`
+  - Standardabweichung Y: `r standard_y$sd`
+  - Standardfehler Y: `r standard_y$se`
+  - Fehlerzahl Y: `r standard_y$failure`
+
+
+### Trefferwahrscheinlichkeit
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+distance = median(pointGroups[,'distance'])
+p05m = calcHitProb4Range(rescalePointGroup(pointGroups, 05), pointDataConfig, weaponConfig, reportConfig)$Probability
+p10m = calcHitProb4Range(rescalePointGroup(pointGroups, 10), pointDataConfig, weaponConfig, reportConfig)$Probability
+p15m = calcHitProb4Range(rescalePointGroup(pointGroups, 15), pointDataConfig, weaponConfig, reportConfig)$Probability
+p20m = calcHitProb4Range(rescalePointGroup(pointGroups, 20), pointDataConfig, weaponConfig, reportConfig)$Probability
+p25m = calcHitProb4Range(rescalePointGroup(pointGroups, 25), pointDataConfig, weaponConfig, reportConfig)$Probability
+p50m = calcHitProb4Range(rescalePointGroup(pointGroups, 50), pointDataConfig, weaponConfig, reportConfig)$Probability
+p100m = calcHitProb4Range(rescalePointGroup(pointGroups, 100), pointDataConfig, weaponConfig, reportConfig)$Probability
+
+
+plwd = 0.8
+
+plot(calcHitProb4Range(pointGroups, pointDataConfig, weaponConfig, reportConfig)$Probability,
+     , type = 'o'
+     #, main = paste('Trefferwahrscheinlichkeiten')
+     , xlab = paste('Target Diameter in ', reportConfig$report.TargetPlotUnit, ' ')
+     , ylab = 'Hits per 100 Shots'
+     , lwd = plwd * 1.5 #strichgröße
+     #, cex = 1 #symbolgröße
+     , pch = 1 #schwarze Punkte
+     , col = 1
+     
+)
+
+
+
+if (distance != 05) points(p05m, type = 'o', pch = 5, col = 5, lwd = plwd)
+if (distance != 10) points(p10m, type = 'o', pch = 3, col = 3, lwd = plwd)
+if (distance != 15) points(p15m, type = 'o', pch = 4, col = 4, lwd = plwd)
+if (distance != 20) points(p20m, type = 'o', pch = 2, col = 2, lwd = plwd)
+if (distance != 25) points(p25m, type = 'o', pch = 6, col = 6, lwd = plwd)
+if (distance != 50) points(p50m, type = 'o', pch = 11, col = 11, lwd = plwd)
+if (distance != 100) points(p100m, type = 'o', pch = 8, col = 8, lwd = plwd)
+
+   
+unit = reportConfig$report.DistanceUnit
+if (unit == 'm')  unit = 'Meter'
+nix05 = paste('05', unit)
+nix10 = paste('10', unit)
+nix15 = paste('15', unit)
+nix20 = paste('20', unit)
+nix25 = paste('25', unit)
+nix50 = paste('50', unit)
+nix100 = paste('100', unit)
+
+
+if (distance == 05) legend('bottomright',c(nix05, nix10, nix15, nix20, nix25, nix50, nix100),col = c(1,3,4,2,6,11,8),pch = c(1,3,4,2,6,11,8), inset = .04, title = 'Schussentfernung', seg.len = 2, bty = 'n', lwd = 1)
+if (distance == 10) legend('bottomright',c(nix05, nix10, nix15, nix20, nix25, nix50, nix100),col = c(5,1,4,2,6,11,8),pch = c(5,1,4,2,6,11,8), inset = .04, title = 'Schussentfernung', seg.len = 2, bty = 'n', lwd = 1)
+if (distance == 15) legend('bottomright',c(nix05, nix10, nix15, nix20, nix25, nix50, nix100),col = c(5,3,1,2,6,11,8),pch = c(5,3,1,2,6,11,8), inset = .04, title = 'Schussentfernung', seg.len = 2, bty = 'n', lwd = 1)
+if (distance == 20) legend('bottomright',c(nix05, nix10, nix15, nix20, nix25, nix50, nix100),col = c(5,3,4,1,6,11,8),pch = c(5,3,4,1,6,11,8), inset = .04, title = 'Schussentfernung', seg.len = 2, bty = 'n', lwd = 1)
+if (distance == 25) legend('bottomright',c(nix05, nix10, nix15, nix20, nix25, nix50, nix100),col = c(5,3,4,2,1,11,8),pch = c(5,3,4,2,1,11,8), inset = .04, title = 'Schussentfernung', seg.len = 2, bty = 'n', lwd = 1)
+if (distance == 50) legend('bottomright',c(nix05, nix10, nix15, nix20, nix25, nix50, nix100),col = c(5,3,4,2,1,11,8),pch = c(5,3,4,2,1,11,8), inset = .04, title = 'Schussentfernung', seg.len = 2, bty = 'n', lwd = 1)
+if (distance == 100) legend('bottomright',c(nix05, nix10, nix15, nix20, nix25, nix50, nix100),col = c(5,3,4,2,1,11,8),pch = c(5,3,4,2,1,11,8), inset = .04, title = 'Schussentfernung', seg.len = 2, bty = 'n', lwd = 1)
+
+
+
+```
+
+
+
+
+
+
+### Trefferdarstellung auf einer `r reportConfig$report.Target` Scheibe
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+report.UnitConversion = paste(reportConfig$report.DistanceUnit,
+                              '2',
+                              pointDataConfig$pointData.Unit,
+                              sep = '')
+ammoConv = paste(weaponConfig$caliberUnit,'2',pointDataConfig$pointData.Unit,sep = '')
+conversion = getConvFac(ammoConv)
+caliber = conversion*weaponConfig$caliber
+
+if (is.null(caliber) || caliber <= 0) {
+  print("Error: Caliber is Null")
+} else {
+  
+  drawGroupColour(pointGroups,
+                  center = FALSE,
+                  xyTopLeft = pointDataConfig$pointData.XyTopLeft,
+                  caliber = caliber,
+                  dstTarget = median(pointGroups[,'distance']),
+                  conversion = report.UnitConversion,
+                  unit = reportConfig$report.TargetPlotUnit,
+                  doRob = reportConfig$report.Robust,
+                  scaled = TRUE,
+                  alpha = 0.8,
+                  maxSpread = TRUE,
+                  CEP = TRUE,
+                  level = 0.90,
+                  main = NULL,
+                  target = reportConfig$report.Target)
+  
+}
+simRing = simRingCount(pointGroups,  target = reportConfig$report.Target, caliber = caliber, unit = pointDataConfig$pointData.Unit)
+simuliert = table(simRing$rings)
+shots = sum(table(simRing$rings))
+simuliert20 = round( simuliert / sum(table(simRing$rings)) * 20)
+
+OrginaleEntfernung = ''
+if (reportConfig$OriginalDistance != median(pointGroups[,'distance'])) {
+  OrginaleEntfernung = paste(
+    'Die originalen Entfernung war ', reportConfig$OriginalDistance, reportConfig$report.DistanceUnit,'.', sep = '')
+}
+
+
+```
+
+Die Darstellung erfolgte für alle Schussgruppen im Kaliber `r weaponConfig$caliber` `r weaponConfig$caliberUnit` auf einer Entfernung von `r median(pointGroups[,'distance'])` `r reportConfig$report.DistanceUnit`. `r OrginaleEntfernung`
+
+
+Geschossen wurden *`r simuliert['10']`* 10er, *`r simuliert['9']`* 9er. Es gab *`r shots - simuliert['10'] - simuliert['9']`* Fehlschüsse. Umgerechnet auf 20 Schuss sind das *`r simuliert20['10']`* 10er, *`r simuliert20['9']`* 9er und *`r 20 - simuliert20['10'] - simuliert20['9']`* Fehlschüsse.
+
+
+
+### Datenquelle
+
+Der Report wurde am `r Sys.Date()` aus dem Point Data File *`r basename(PointDataFile)`* erstellt.
+

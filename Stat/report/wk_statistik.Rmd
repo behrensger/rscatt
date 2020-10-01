@@ -1,0 +1,158 @@
+---
+  title: Leistungsentwicklung bei Wettkämpfen
+  output: html_document
+---
+
+##Einführung
+
+###Zielstellung
+
+- Beschreibung der bisherigen Entwicklung
+- Bestimmung des Entwicklungstrends
+- Hochrechnung über die Erreichung von Leistungszielen
+- Erkennung von Potentialen, also in welchem Teilbereich das größte Entwicklungspotential steckt.
+
+
+###Datenbasis
+
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+
+Von = c(min(WKProtokol$Datum))
+Bis = c(max(WKProtokol$Datum))
+cnt = nrow(WKProtokol)
+
+
+```
+
+Im Zeitraum vom `r Von` bis `r Bis` wurden `r cnt` Wettkämpfe geschossen. Aus statistischen Gründen werden dabei ausgekoppelte Wertungen (Präzision und Kombi) als einzelner Wettkampf betrachtet. Auch mehrfache Starts in unterschiedlichen Disziplinen/Waffen werden jeweils als eigener Wettkampf betrachtet.
+
+Nach Disziplinen verteilen sich die Trainingseinheiten wie folgt: 
+
+```{r PlotWettkampfVerteilung, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+nix = PlotWettkampfVerteilung(WKProtokol, leistungsziel = 2,  title = 'Monatliche Wettkampfteilnahme')
+```
+
+`r kable(addmargins(table(WKProtokol$Disziplin, WKProtokol$Waffe)), caption = 'Verteilung Disziplin auf Waffen')`
+
+
+###Begriffsbestimmung
+
+*Präzision* 
+
+: In zwei Serien von jeweils 5 Minuten werden jeweils 10 Schuss in einem beliebigem Anschlag aus 25m auf eine BDS9-Scheibe abgegeben. 
+
+*Kombi* 
+
+: Zusätzlich zu *Präzision* 2x5 Schuss im Interval 3-7 Sekunden, 5 Schuss in einer 10 Sekunden und 10 Schuss in einer 20 Sekunden Serie abgegeben. 
+
+*Speed* 
+
+: in sechs Serien a fünf Schuss werden auf eine Speed-Scheibe geschossen. Die ermittelte Zeit wird von geschossenen Ringen abgezogen. 
+
+*Mehrdistanz*
+
+: 40 Schuss aus verschiedenen Anschlägen und verschiedenen Entfernungen
+      
+
+
+
+*Fallscheibe* 
+
+: in sechs Serien a fünf Schuss werden auf Metallplatten geschossen. Ziel ist eine möglichst niedrige Zeit.
+
+*Speed-Steel* 
+
+: Vergleichbar zu Fallscheibe, noch experimentell. Wird gegeneinander geschossen und der Gewinner kommt eine Runde weiter.
+
+
+*IPSC* 
+
+: Teilnahme an einem IPSC-Wettkampf. Eine vergleichbare Leistung gibt hier nicht, eine Leistungsentwicklung kann nur indirekt durch Platzierungen und Level des Wettkampfs ermittelt werden.
+
+
+
+###Leistungsziele
+
+####Anforderungen Qualifikation Landesmeisterschaft NRW
+
+`r kable(ErzeugeQualifikationLMTabelle())`
+
+####Anforderungen Qualifikation Deutsche Meisterschaft
+
+`r kable(ErzeugeQualifikationDMTabelle())`
+
+####Anforderungen Deutscher Meister
+
+`r kable(ErzeugeLeistungszielTabelle())`
+
+
+
+###Farb- und Symbolkodierung
+
+
+Bei der Auswertung der SCATT-Daten wird im Augenblick nicht zwischen verschiedenen Waffen eines Waffentyps unterschieden. Zur optischen Erkennung welche Trainingsession mit welcher Waffe geschossen wurde, wird durchgängig mit diesem Farbschema gearbeitet:
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+waffen = sort(unique(WKProtokol$Waffe))
+m = matrix(nrow = length(waffen), ncol = 3)
+for (i in 1:length(waffen)) {
+  m[i,1] = waffen[i]
+  m[i,2] = ZuordnungWaffentypName(ZuordnungWaffe2KwLw(waffen[i]))
+  m[i,3] = GibFarbkodiertenKreis(waffen[i])
+}
+colnames(m) = c('Waffe', 'Waffentyp', 'Farbcode')
+```
+`r kable(m, escape = FALSE)` 
+
+
+
+
+
+## Entwicklung
+### Präzision
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+nix = PlotWettkampfDisziplin(WKProtokol, disziplin = 'Präzision' )
+```
+
+### Kombi
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+nix = PlotWettkampfDisziplin(WKProtokol, disziplin = 'Kombi' )
+```
+
+
+### Mehrdistanz
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+nix = PlotWettkampfDisziplin(WKProtokol, disziplin = 'Mehrdistanz', 'KW'  )
+```
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+nix = PlotWettkampfDisziplin(WKProtokol, disziplin = 'Mehrdistanz', 'LW' )
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+nix = PlotWettkampfDisziplin(WKProtokol, disziplin = 'Mehrdistanz', 'SLF')
+```
+
+
+### Speed
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+nix = PlotWettkampfDisziplin(WKProtokol, disziplin = 'Speed', 'KW')
+```
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+nix = PlotWettkampfDisziplin(WKProtokol, disziplin = 'Speed', 'LW')
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+nix = PlotWettkampfDisziplin(WKProtokol, disziplin = 'Speed', 'SLF')
+```
+
+
+
+## Abschluss
+
+### Reportdatum
+Der Report wurde am `r Sys.Date()` aus den Aufzeichnungen der Datei <<*`r DatenbasisDatei`*>> erstellt.

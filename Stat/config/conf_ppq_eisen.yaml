@@ -1,0 +1,16 @@
+#Weapon Description
+weapon: Walther PPQ Eisen
+caliber: 9
+caliberUnit: mm
+click.x: 5
+click.y: 10
+click.Unit: mm
+click.Distance: 25
+click.DistanceUnit: m
+goal.plate.time: 45
+goal.speed.time: 49
+goal.speed.first: 2.5
+goal.speed.rings: 300
+goal.precision: 200
+fallscheibe.type: GK	
+

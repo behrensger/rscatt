@@ -1,0 +1,107 @@
+---
+title: "OAL-Abweichung Dillon XL650"
+output: html_notebook
+---
+```{r}
+library(ggplot2)
+```
+
+
+##Testaufbau:
+  - Dillon XL650
+  - Geschosse mit Bullet Feeder gesetzt
+  - Hornady 2-in-1 Crimp-Matrize 
+  - Hülsen unterschiedlicher Hersteller, unsortiert.
+  - LOS-Geschosse 145gr HP
+  - Messung mit analogem Messschieber
+
+
+##Rohdaten
+
+```{r}
+#Rohdaten
+valuesR = c(rep(28.6, 12), rep(28.7, 29), rep(28.8, 63), rep(28.9, 38), rep(29, 16),rep(29.1, 9))
+dataR = data.frame(value=valuesR)
+
+
+
+
+
+```
+
+
+```{r echo=FALSE}
+x=valuesR
+h<-hist(x, breaks=seq(28.5, 29.2, 0.05), col="blue", xlab="Länge OAL in mm", ylab="Anzahl", ylim=c(0,100), main="Histogram Patronenlänge") 
+xfit<-seq(min(x),max(x),length=40) 
+yfit<-dnorm(xfit,mean=mean(x),sd=sd(x)) 
+yfit <- yfit*0.1*length(x) 
+lines(xfit, yfit, col="red", lwd=2)
+
+
+```
+
+
+
+
+##Bereinigte Daten
+
+Die Rohdaten zeigen eine Rechtslastigkeit der Daten. Ursache sind vermutlich Abweichungen zu hoch gesetzte Zündhütchen. Die Rohdaten wurden daher so bereinigt, dass jede Gruppe auf der rechten Seite um 9 Patronen reduziert wurde. 
+
+
+```{r}
+#Bereinigt wg. Rechtslastigkeit durch Zündhütchen.
+valuesB = c(rep(28.6, 12), rep(28.7, 29), rep(28.8, 63), rep(28.9, 38-9), rep(29, 16-9),rep(29.1, 9-9))
+dataB = data.frame(value=valuesB)
+```
+
+
+
+```{r echo=FALSE}
+x=valuesB
+h<-hist(x, breaks=seq(28.5, 29.2, 0.05), col="blue", xlab="Länge OAL in mm", ylab="Anzahl", ylim=c(0,100), main="Histogram Patronenlänge") 
+xfit<-seq(min(x),max(x),length=40) 
+yfit<-dnorm(xfit,mean=mean(x),sd=sd(x)) 
+yfit <- yfit*0.1*length(x) 
+lines(xfit, yfit, col="red", lwd=2)
+
+
+```
+
+
+
+
+
+
+##Verteilungen
+
+  - 28.6:  `r round(100/nrow(dataB)*12, 1)`% 
+  - 28.7:  `r round(100/nrow(dataB)*29, 1)`% 
+  - 28.8:  `r round(100/nrow(dataB)*63, 1)`%
+  - 28.9:  `r round(100/nrow(dataB)*29, 1)`% 
+  - 29.0:  `r round(100/nrow(dataB)*7, 1)`% 
+
+Mittelwert = `r round(mean(valuesB),2)` mm mit einer Standardabweichung von `r round(sd(valuesB), 2)` mm.
+
+
+```{r echo=FALSE}
+d <- density(valuesB,adjust = 1.1) # returns the density data 
+plot(d,  main="Kerndichte Patronenlänge")
+polygon(d, col="blue", border="black")
+```
+
+
+
+##Erwartete V_0 und Geschossabfall
+
+Mit QuickLoad / QuickTarget wurde rechnerisch folgende Werte für Geschwindigkeit V_0 und Geschossabfall auf 25m ermittelt:
+
+  - 28.6: 282 m/s
+  - 28.7: 281 m/s
+  - 28.8: 280 m/s
+  - 28.9: 280 m/s
+  - 29.0: 279 m/s
+
+Der rechnerische Geschossabfall kann vernachlässigt werden, der Unterschied zwischen den Extremwerten liegt bei 1 mm auf 25m Entfernung.
+
+
